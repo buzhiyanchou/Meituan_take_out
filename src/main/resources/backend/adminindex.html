@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>美团商家后台</title>
+    <title>美团平台管理端</title>
     <link rel="shortcut icon" href="favicon.ico">
     <!-- 引入样式 -->
     <link rel="stylesheet" href="plugins/element-ui/index.css" />
@@ -79,7 +79,8 @@
               <span>{{headTitle}}</span>
             </div>
             <div class="right-menu">
-              <div class="avatar-wrapper">{{ userInfo.name }}</div>
+<!--              <div class="avatar-wrapper">{{ userInfo.name }}</div>-->
+              <div class="avatar-wrapper">美团Admin</div>
               <!-- <div class="logout" @click="logout">退出</div> -->
               <img src="images/icons/btn_close@2x.png" class="outLogin" alt="退出" @click="logout" />
             </div>
@@ -118,51 +119,23 @@
             menuActived: '2',
             userInfo: {},
             menuList: [
-              // {
-              //   id: '1',
-              //   name: '门店管理',
-              //   children: [
                   {
                     id: '2',
-                    name: '员工管理',
-                    url: 'page/member/list.html',
+                    name: '店铺账号管理',
+                    url: 'page/member/adminList.html',
                     icon: 'icon-member'
                   },
                   {
                     id: '3',
-                    name: '分类管理',
-                    url: 'page/category/list.html',
-                    icon: 'icon-category'
-                  },
-                  {
-                    id: '4',
-                    name: '菜品管理',
-                    url: 'page/food/list.html',
-                    icon: 'icon-food'
-                  },
-                  {
-                    id: '5',
-                    name: '套餐管理',
-                    url: 'page/combo/list.html',
-                    icon: 'icon-combo'
-                  },
-                  {
-                    id: '6',
-                    name: '订单明细',
+                    name: '平台订单明细',
                     url: 'page/order/list.html',
                     icon: 'icon-order'
-                  },
-              {
-                id: '7',
-                name: '精准营销',
-                url: 'page/order/list.html',
-                icon: 'icon-order'
-              }
+                },
               //   ],
               // },
             ],
-            iframeUrl: 'page/member/list.html',
-            headTitle: '员工管理',
+            iframeUrl: 'page/member/adminlist.html',
+            headTitle: '店铺账号管理',
             goBackFlag: false,
             loading: true,
             timer: null

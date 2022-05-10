@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @RestController
@@ -122,6 +125,35 @@ public class EmployeeController {
         //执行查询
         employeeService.page(pageInfo,queryWrapper);
 
+        return R.success(pageInfo);
+    }
+
+
+    /**
+     * 店铺管理端后台管理端调用查询所有店铺信息分页查询
+     * @param page
+     * @param pageSize
+     * @param name
+     * @return
+     */
+    @GetMapping("/shopAdminPage")
+    public R<Page> shopPage(int page,int pageSize,String name){
+        log.info("page = {},pageSize = {},name = {}" ,page,pageSize,name);
+
+        //构造分页构造器
+        Page<Employee> pageInfo = new Page(page,pageSize);
+
+        //构造条件构造器
+        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper();
+        //添加过滤条件
+        queryWrapper.like(StringUtils.isNotEmpty(name),Employee::getName,name);
+        //添加排序条件
+        queryWrapper.orderByDesc(Employee::getUpdateTime);
+        //执行查询
+        employeeService.page(pageInfo, queryWrapper);
+        List<Employee> records = pageInfo.getRecords();
+        List<Employee> collect = records.stream().filter(s -> s.getType() != 0).collect(Collectors.toList());
+        pageInfo.setRecords(collect);
         return R.success(pageInfo);
     }
 
