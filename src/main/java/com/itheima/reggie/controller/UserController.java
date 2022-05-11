@@ -1,6 +1,10 @@
 package com.itheima.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itheima.reggie.common.BaseContext;
 import com.itheima.reggie.common.R;
@@ -17,12 +21,14 @@ import com.itheima.reggie.utils.SMSUtils;
 import com.itheima.reggie.utils.ValidateCodeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -71,6 +77,40 @@ public class UserController {
     }
 
     /**
+     * 注册检测是否已经有存在账号，存在则提示以存在，否则成功注册！
+     *
+     * @param user
+     * @return
+     */
+    @PostMapping("/checkAccount")
+    public R<Boolean> checkAccount(@RequestBody User user) {
+        String accountName = user.getName();
+        //用QueryWrapper做条件查询
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        if (!ObjectUtils.isEmpty(accountName)) {
+            queryWrapper.eq("name", accountName);
+        }
+        List<User> list = userService.list(queryWrapper);
+        if (CollectionUtils.isEmpty(list)) {
+            return R.success(Boolean.TRUE);
+        }
+        return R.success(Boolean.FALSE);
+    }
+
+    /**
+     * 注册用户账号
+     *
+     * @param user
+     * @return
+     */
+    @PostMapping("/register")
+    public R<Boolean> register(@RequestBody User user) {
+        boolean result = userService.save(user);
+        return R.success(result);
+    }
+
+
+    /**
      * 移动端用户登录
      *
      * @param map
@@ -83,7 +123,13 @@ public class UserController {
 
         //获取手机号
         String phone = map.get("phone").toString();
-
+        if (ObjectUtils.isNull(map.get("name")) || ObjectUtils.isNull(map.get("pwd"))) {
+            return R.error("账号或密码有误，请核对后再次登录~");
+        }
+        //获取账号
+        String accountName = map.get("name").toString();
+        //获取密码
+        String pwd = map.get("pwd").toString();
         //获取验证码
         String code = map.get("code").toString();
 
@@ -92,7 +138,7 @@ public class UserController {
 
         //进行验证码的比对（页面提交的验证码和Session中保存的验证码比对）
         if (codeInSession != null && codeInSession.equals(code)) {
-            //如果能够比对成功，说明登录成功
+            //1、如果能够比对成功，说明数字验证成功
 
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(User::getPhone, phone);
@@ -106,7 +152,15 @@ public class UserController {
                 userService.save(user);
             }
             session.setAttribute("user", user.getId());
-            return R.success(user);
+            //用QueryWrapper做条件查询
+            QueryWrapper<User> queryWrapperNew = new QueryWrapper<>();
+            if (!ObjectUtils.isEmpty(accountName)) {
+                queryWrapperNew.eq("name", accountName);
+            }
+            User one = userService.getOne(queryWrapper);
+            if (one.getName() == accountName || one.getPassword() == pwd) {
+                return R.success(user);
+            }
         }
         return R.error("登录失败");
     }

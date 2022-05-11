@@ -1,5 +1,6 @@
 package com.itheima.reggie.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -58,4 +59,10 @@ public class Orders implements Serializable {
 
     //收货人
     private String consignee;
+
+    //评价
+    private String evaluate;
+
+    //评价状态
+    private Integer evaStutas;
 }

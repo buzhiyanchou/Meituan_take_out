@@ -43,4 +43,10 @@ public class OrderDetail implements Serializable {
 
     //图片
     private String image;
+
+    //评价
+    private String evaluate;
+
+    //评价状态
+    private String eva_stutas;
 }
