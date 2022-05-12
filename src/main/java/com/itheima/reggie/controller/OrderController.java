@@ -2,21 +2,15 @@ package com.itheima.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itheima.reggie.common.R;
-import com.itheima.reggie.entity.EvaVO;
-import com.itheima.reggie.entity.Orders;
-import com.itheima.reggie.entity.User;
+import com.itheima.reggie.entity.*;
 import com.itheima.reggie.service.OrderService;
-import jdk.nashorn.internal.ir.CallNode;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 订单
@@ -28,6 +22,13 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+
+    @Value("${costAblity.high}")
+    private Integer high;
+    @Value("${costAblity.middle}")
+    private Integer middle;
+    @Value("${costAblity.low}")
+    private Integer low;
 
     /**
      * 用户下单
@@ -76,7 +77,7 @@ public class OrderController {
         String evaluate = orders.getEvaluate();
         //构造器对象
         QueryWrapper<Orders> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",orders.getId());
+        queryWrapper.eq("id", orders.getId());
         boolean b = orderService.updateById(orders);
         return R.success(b);
 
@@ -103,6 +104,51 @@ public class OrderController {
         evaVO.setEvaluate(evaluate);
         evaVO.setEvaStauts(evaStauts);
         return R.success(evaVO);
+    }
+
+
+    /**
+     * 店铺所有订单的量分析，将人群按消费比例，分成三份
+     *
+     * @param user
+     * @return
+     */
+    @GetMapping("/analysisOrder")
+    public R<AnalysisOrders> analysisOrders(@RequestBody User user) {
+        //TODO 订单的数据处理封装
+        AnalysisOrders analysisOrders = AnalysisOrders.builder()
+//                .maxOrders()
+//                .minOrders()
+//                .midOrders()
+//                .maxConsumer()
+//                .minConsumer()
+//                .midConsumer()
+//                .averagePrice()
+//                .hotCommodityList()
+//                .totalOrders()
+                .build();
+        return R.success(analysisOrders);
+    }
+
+    /**
+     * 基于用户分析订单数据
+     *
+     * @param user
+     * @return
+     */
+    @GetMapping("/analysisOrderByCustomer")
+    public R<AnalysisOrdersByUser> analysisOrderByCustomer(@RequestBody User user) {
+
+
+        //TODO 属于用户的订单数据处理封装
+        AnalysisOrdersByUser analysisOrdersByUser = AnalysisOrdersByUser.builder()
+//                .costAbility()
+//                .averagePriceInWeek()
+//                .OrdersInWeek()
+//                .OrdersInMouth()
+//                .HotDishlist()
+                .build();
+        return R.success(analysisOrdersByUser);
     }
 
 }

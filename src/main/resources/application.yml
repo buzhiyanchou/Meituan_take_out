@@ -20,3 +20,9 @@ mybatis-plus:
       id-type: ASSIGN_ID
 reggie:
   path: E:\upload\
+
+#给周消费水平分级，可以灵活配置
+costAblity:
+  high: 800
+  middle: 500
+  low: 300
