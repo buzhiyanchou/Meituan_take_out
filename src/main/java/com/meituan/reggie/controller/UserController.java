@@ -140,10 +140,10 @@ public class UserController {
 //        if (codeInSession != null && codeInSession.equals(code)) {
             //1、如果能够比对成功，说明数字验证成功
 
-            LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+//            LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
 //            queryWrapper.eq(User::getPhone, phone);
 
-            User user = userService.getOne(queryWrapper);
+//            User user = userService.getOne(queryWrapper);
 //            if (user == null) {
 //                //判断当前手机号对应的用户是否为新用户，如果是新用户就自动完成注册
 //                user = new User();
@@ -151,15 +151,15 @@ public class UserController {
 //                user.setStatus(1);
 //                userService.save(user);
 //            }
-            session.setAttribute("user", user.getId());
+//            session.setAttribute("user", user.getId());
             //用QueryWrapper做条件查询
-            QueryWrapper<User> queryWrapperNew = new QueryWrapper<>();
             if (!ObjectUtils.isEmpty(accountName)) {
-                queryWrapperNew.eq("name", accountName);
-            }
-            User one = userService.getOne(queryWrapper);
-            if (one.getName() == accountName || one.getPassword() == pwd) {
-                return R.success(user);
+                QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("name", accountName);
+                User one = userService.getOne(queryWrapper);
+                if (one.getName() .equals( accountName )&& one.getPassword() .equals( pwd)) {
+                    return R.success(one);
+                }
             }
 //        }
         return R.error("登录失败");
