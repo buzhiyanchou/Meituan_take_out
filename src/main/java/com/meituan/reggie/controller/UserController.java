@@ -122,7 +122,7 @@ public class UserController {
         log.info(map.toString());
 
         //获取手机号
-        String phone = map.get("phone").toString();
+//        String phone = map.get("phone").toString();
         if (ObjectUtils.isNull(map.get("name")) || ObjectUtils.isNull(map.get("pwd"))) {
             return R.error("账号或密码有误，请核对后再次登录~");
         }
@@ -131,26 +131,26 @@ public class UserController {
         //获取密码
         String pwd = map.get("pwd").toString();
         //获取验证码
-        String code = map.get("code").toString();
+//        String code = map.get("code").toString();
 
         //从Session中获取保存的验证码
-        Object codeInSession = session.getAttribute(phone);
+//        Object codeInSession = session.getAttribute(phone);
 
         //进行验证码的比对（页面提交的验证码和Session中保存的验证码比对）
-        if (codeInSession != null && codeInSession.equals(code)) {
+//        if (codeInSession != null && codeInSession.equals(code)) {
             //1、如果能够比对成功，说明数字验证成功
 
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(User::getPhone, phone);
+//            queryWrapper.eq(User::getPhone, phone);
 
             User user = userService.getOne(queryWrapper);
-            if (user == null) {
-                //判断当前手机号对应的用户是否为新用户，如果是新用户就自动完成注册
-                user = new User();
-                user.setPhone(phone);
-                user.setStatus(1);
-                userService.save(user);
-            }
+//            if (user == null) {
+//                //判断当前手机号对应的用户是否为新用户，如果是新用户就自动完成注册
+//                user = new User();
+//                user.setPhone(phone);
+//                user.setStatus(1);
+//                userService.save(user);
+//            }
             session.setAttribute("user", user.getId());
             //用QueryWrapper做条件查询
             QueryWrapper<User> queryWrapperNew = new QueryWrapper<>();
@@ -161,7 +161,7 @@ public class UserController {
             if (one.getName() == accountName || one.getPassword() == pwd) {
                 return R.success(user);
             }
-        }
+//        }
         return R.error("登录失败");
     }
 
