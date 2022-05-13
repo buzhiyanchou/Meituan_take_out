@@ -158,6 +158,7 @@ public class UserController {
                 queryWrapper.eq("name", accountName);
                 User one = userService.getOne(queryWrapper);
                 if (one.getName() .equals( accountName )&& one.getPassword() .equals( pwd)) {
+                    session.setAttribute("user", one.getId());
                     return R.success(one);
                 }
             }
