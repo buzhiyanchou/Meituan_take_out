@@ -50,7 +50,7 @@ public class OrderController {
      * @param pageSize
      * @return
      */
-    @GetMapping("/userPage")
+    @GetMapping("/page")
     public R<Page> page(int page, int pageSize) {
 
         //分页构造器对象
