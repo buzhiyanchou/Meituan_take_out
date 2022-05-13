@@ -4,18 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-<<<<<<< HEAD:src/main/java/com/itheima/reggie/controller/OrderController.java
-import com.itheima.reggie.common.R;
-import com.itheima.reggie.entity.EvaVO;
-import com.itheima.reggie.entity.Orders;
-import com.itheima.reggie.entity.User;
-import com.itheima.reggie.service.OrderService;
-import lombok.Data;
-=======
 import com.meituan.reggie.common.R;
 import com.meituan.reggie.entity.*;
 import com.meituan.reggie.service.OrderService;
->>>>>>> acc32aa04333b7a19f21a7ac5527eb0e631b2960:src/main/java/com/meituan/reggie/controller/OrderController.java
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
