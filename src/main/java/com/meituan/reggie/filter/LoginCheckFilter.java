@@ -43,7 +43,9 @@ public class LoginCheckFilter implements Filter{
                 "/user/checkAccount",
                 "/user/register",
                 "/order/selectEvaluateByOrderId",
-                "/order/evaluateOrder"
+                "/order/evaluateOrder",
+                "/order/analysisOrderByCustomer",
+                "/order/analysisOrder"
         };
 
         //2、判断本次请求是否需要处理

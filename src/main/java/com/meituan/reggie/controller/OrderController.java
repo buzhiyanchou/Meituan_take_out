@@ -7,10 +7,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.meituan.reggie.common.R;
 import com.meituan.reggie.entity.*;
 import com.meituan.reggie.service.OrderService;
+import com.meituan.reggie.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 订单
@@ -22,13 +27,12 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private UserService userService;
 
-    @Value("${costAblity.high}")
-    private Integer high;
     @Value("${costAblity.middle}")
-    private Integer middle;
-    @Value("${costAblity.low}")
-    private Integer low;
+    private BigDecimal middle;
+
 
     /**
      * 用户下单
@@ -110,24 +114,85 @@ public class OrderController {
     /**
      * 店铺所有订单的量分析，将人群按消费比例，分成三份
      *
-     * @param user
      * @return
      */
     @GetMapping("/analysisOrder")
-    public R<AnalysisOrders> analysisOrders(@RequestBody User user) {
-        //TODO 订单的数据处理封装
+    public R<AnalysisOrders> analysisOrders() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        Calendar caln = Calendar.getInstance();
+        caln.setTime(getTimesWeekmorning());
+        caln.add(Calendar.DAY_OF_WEEK, 7);
+        QueryWrapper<Orders> queryWrapperx = new QueryWrapper<>();
+        queryWrapperx.between("checkout_time", cal.getTime(), caln.getTime());
+        List<Orders> list = orderService.list(queryWrapperx);
+        Integer shopScore = null;
+        Integer flag;
+        for (int i = 0; i < list.size(); i++) {
+            Integer status = list.get(i).getStatus();
+            //差评扣-8分
+            if (Integer.valueOf("3").equals(status)) {
+                flag = -8;
+                //中评5分
+            } else if (Integer.valueOf("2").equals(status)) {
+                flag = 5;
+                //好评10分
+            } else if (Integer.valueOf("1").equals(status)) {
+                flag = 10;
+            } else {
+                flag = 0;
+            }
+            shopScore = +flag;
+            flag = 0;
+        }
+
+        //店铺总单数
+        int count = list.size();
+        //对店铺订单从高到低消费额降序排列
+        List<Orders> orderBymoneySort = list.stream().sorted(Comparator.comparing(Orders::getAmount).reversed()).collect(Collectors.toList());
+        QueryWrapper<User> queryWrappern = new QueryWrapper<>();
+        Map<Long, User> collect = userService.list(queryWrappern).stream().collect(Collectors.toMap(User::getId, a -> a, (k1, k2) -> k1));
+        Map<Long, Orders> ordersMap = list.stream().sorted(Comparator.comparing(Orders::getAmount).reversed()).collect(Collectors.toMap(Orders::getId, a -> a, (k1, k2) -> k1));
+        orderBymoneySort.forEach(t -> {
+            t.setUserName(collect.get(t.getUserId()).getName());
+        });
+        BigDecimal totalMoney = BigDecimal.ZERO;
+        for (int i = 0; i < list.size(); i++) {
+            totalMoney = totalMoney.add(ordersMap.get(list.get(i).getId()).getAmount());
+        }
+        Map<Long, Orders> map = list.stream().collect(Collectors.toMap(Orders::getUserId, a -> a, (k1, k2) -> k1));
+        ArrayList<User> userList = new ArrayList<>();
+        list.forEach(t -> {
+            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id", t.getUserId());
+            User one = userService.getOne(queryWrapper);
+            one.setAmount(map.get(t.getUserId()).getAmount());
+            userList.add(one);
+        });
+        List<User> users = userList.stream().sorted(Comparator.comparing(User::getAmount).reversed()).collect(Collectors.toList());
+
         AnalysisOrders analysisOrders = AnalysisOrders.builder()
-//                .maxOrders()
-//                .minOrders()
-//                .midOrders()
-//                .maxConsumer()
-//                .minConsumer()
-//                .midConsumer()
-//                .averagePrice()
-//                .hotCommodityList()
-//                .totalOrders()
+                .orderBymoneySort(orderBymoneySort)
+                .orderByUserId(users)
+                .totalMoney(totalMoney)
+                .ordersInWeekNum(count)
+                .averagePriceInWeek(new Double(String.valueOf(totalMoney.divide(BigDecimal.valueOf(count), 20, BigDecimal.ROUND_HALF_UP))))
+                .ordersPeopleNum(userList.size())
+                .shopConvertRate(getRandomNum(50, 89) + "%")
+                .orderConvertRate(getRandomNum(80, 99) + "%")
+                .shopScore(new Double(shopScore) * 9.9)
+                .replyOrderRate(getRandomNum(85, 94) + "%")
                 .build();
         return R.success(analysisOrders);
+    }
+
+    // 获得本周一0点时间
+    public static Date getTimesWeekmorning() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        return cal.getTime();
     }
 
     /**
@@ -138,19 +203,60 @@ public class OrderController {
      */
     @GetMapping("/analysisOrderByCustomer")
     public R<AnalysisOrdersByUser> analysisOrderByCustomer(@RequestBody User user) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        Calendar caln = Calendar.getInstance();
+        caln.setTime(getTimesWeekmorning());
+        caln.add(Calendar.DAY_OF_WEEK, 7);
+        QueryWrapper<Orders> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", user.getId());
+        queryWrapper.between("checkout_time", cal.getTime(), caln.getTime());
+        List<Orders> list = orderService.list(queryWrapper);
+        int count = list.size();
+        Map<Long, Orders> ordersMap = list.stream().sorted(Comparator.comparing(Orders::getAmount).reversed()).collect(Collectors.toMap(Orders::getId, a -> a, (k1, k2) -> k1));
 
+        BigDecimal totalMoney = BigDecimal.ZERO;
+        BigDecimal ava = BigDecimal.ZERO;
+        BigDecimal divide = BigDecimal.ZERO;
+        for (int i = 0; i < list.size(); i++) {
+            totalMoney = totalMoney.add(ordersMap.get(list.get(i).getId()).getAmount());
+        }
+        if (count != 0) {
+            ava = totalMoney.divide(BigDecimal.valueOf(count), 20, BigDecimal.ROUND_HALF_UP);
 
-        //TODO 属于用户的订单数据处理封装
+            //订单消费周内七次的均值
+            divide = totalMoney.divide(BigDecimal.valueOf(7), 20, BigDecimal.ROUND_HALF_UP);
+        }
         AnalysisOrdersByUser analysisOrdersByUser = AnalysisOrdersByUser.builder()
-//                .costAbility()
-//                .averagePriceInWeek()
-//                .OrdersInWeek()
-//                .OrdersInMouth()
-//                .HotDishlist()
+                .costAbilityScore(new Double(String.valueOf(divide)))
+                .averagePriceInWeek(new Double(String.valueOf(ava)))
+                .OrdersInWeek(list)
+                .OrdersInWeekNum(count)
                 .build();
         return R.success(analysisOrdersByUser);
     }
 
-    //TODO 订单状态的改变  配送完成
+    @GetMapping("/completeOrder")
+    public R<Boolean> completeOrder(@RequestBody Orders orders) {
+        //构造器对象
+        orders.setStatus(4);
+        QueryWrapper<Orders> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", orders.getId());
+        boolean b = orderService.updateById(orders);
+        return R.success(b);
+
+    }
+
+
+    public int getRandomNum(int a, int b) {
+        int START = a;//定义范围开始数字
+        int END = b;//定义范围结束数字
+        //创建Random类对象
+        Random random = new Random();
+        //产生随机数
+        int number = random.nextInt(END - START + 1) + START;
+        return number;
+    }
 
 }

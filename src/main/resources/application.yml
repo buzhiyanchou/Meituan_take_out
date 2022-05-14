@@ -19,10 +19,10 @@ mybatis-plus:
     db-config:
       id-type: ASSIGN_ID
 reggie:
-  path: E:\upload\
+  path:  D:\static\
 
 #给周消费水平分级，可以灵活配置
 costAblity:
   high: 800
-  middle: 500
+  middle: 600
   low: 300
