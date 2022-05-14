@@ -109,7 +109,7 @@
                     //表示是从订单页面跳转过来的
                     if(url.includes('success')){
                         window.requestAnimationFrame(()=>{
-                            window.location.href= '/front/page/order.html'
+                            window.location.replace= '/front/page/order.html'
                         })   
                     }else{
                         history.go(-1)
