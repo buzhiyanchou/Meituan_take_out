@@ -166,6 +166,41 @@ public class UserController {
         return R.error("登录失败");
     }
 
+    /**
+     * 移动端用户注册
+     *
+     * @param map
+     * @param session
+     * @return
+     */
+    @PostMapping("/register")
+        public R<User> register(@RequestBody Map map, HttpSession session){
+            log.info(map.toString());
+
+            //获取手机号
+            String phone = map.get("phone").toString();
+           //获取账号
+          String accountName = map.get("name").toString();
+            //获取验证码
+            String code = map.get("code").toString();
+
+            //从Session中获取保存的验证码
+            Object codeInSession = session.getAttribute(phone);
+
+            //进行验证码的比对（页面提交的验证码和Session中保存的验证码比对）
+            if(codeInSession != null && codeInSession.equals(code)){
+                //如果能够比对成功，说明验证码接受成功
+
+                LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+                queryWrapper.eq(User::getName,accountName);
+
+                User user = userService.getOne(queryWrapper);
+                session.setAttribute("user",user.getId());
+                return R.success(user);
+            }
+            return R.error("登录失败");
+        }
+
     //抽离的一个方法，通过订单id查询订单明细，得到一个订单明细的集合
     //这里之所以抽离出来，那是因为直接写在stream中会出现连续叠加.eq的SQL语句导致后面的数据查询不出来
     public List<OrderDetail> getOrderDetailListByOrderId(Long orderId) {
