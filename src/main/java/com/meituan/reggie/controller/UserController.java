@@ -138,7 +138,7 @@ public class UserController {
 
         //进行验证码的比对（页面提交的验证码和Session中保存的验证码比对）
 //        if (codeInSession != null && codeInSession.equals(code)) {
-            //1、如果能够比对成功，说明数字验证成功
+        //1、如果能够比对成功，说明数字验证成功
 
 //            LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
 //            queryWrapper.eq(User::getPhone, phone);
@@ -152,16 +152,16 @@ public class UserController {
 //                userService.save(user);
 //            }
 //            session.setAttribute("user", user.getId());
-            //用QueryWrapper做条件查询
-            if (!ObjectUtils.isEmpty(accountName)) {
-                QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("name", accountName);
-                User one = userService.getOne(queryWrapper);
-                if (one.getName() .equals( accountName )&& one.getPassword() .equals( pwd)) {
-                    session.setAttribute("user", one.getId());
-                    return R.success(one);
-                }
+        //用QueryWrapper做条件查询
+        if (!ObjectUtils.isEmpty(accountName)) {
+            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("name", accountName);
+            User one = userService.getOne(queryWrapper);
+            if (accountName.equals(one.getName()) && pwd.equals(one.getPassword())) {
+                session.setAttribute("user", one.getId());
+                return R.success(one);
             }
+        }
 //        }
         return R.error("登录失败");
     }
