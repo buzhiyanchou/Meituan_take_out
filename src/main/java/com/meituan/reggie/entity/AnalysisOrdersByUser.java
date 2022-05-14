@@ -19,10 +19,10 @@ public class AnalysisOrdersByUser {
     private String costAbility;
     //该用户本周的订单的均价
     private BigDecimal averagePriceInWeek;
-    //本周单量
-    private Integer OrdersInWeek;
-    //本月单量
-    private Integer OrdersInMouth;
+    //本周单量数量
+    private Integer OrdersInWeekNum;
+    //本周订单
+    private List<Orders> OrdersInWeek;
     //客户热购商品
     private List<Dish> hotDishlist;
 }

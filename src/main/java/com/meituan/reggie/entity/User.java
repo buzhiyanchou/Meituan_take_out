@@ -1,6 +1,8 @@
 package com.meituan.reggie.entity;
 
 import lombok.Data;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +35,8 @@ public class User implements Serializable {
     //身份证号
     private String idNumber;
 
-
+    //实收金额
+    private BigDecimal amount;
     //头像
     private String avatar;
 

@@ -7,10 +7,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.meituan.reggie.common.R;
 import com.meituan.reggie.entity.*;
 import com.meituan.reggie.service.OrderService;
+import com.meituan.reggie.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.jacoco.agent.rt.internal_f3994fa.core.internal.flow.IFrame;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 订单
@@ -22,13 +29,12 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private UserService userService;
 
-    @Value("${costAblity.high}")
-    private Integer high;
     @Value("${costAblity.middle}")
-    private Integer middle;
-    @Value("${costAblity.low}")
-    private Integer low;
+    private BigDecimal middle;
+
 
     /**
      * 用户下单
@@ -110,24 +116,54 @@ public class OrderController {
     /**
      * 店铺所有订单的量分析，将人群按消费比例，分成三份
      *
-     * @param user
      * @return
      */
     @GetMapping("/analysisOrder")
-    public R<AnalysisOrders> analysisOrders(@RequestBody User user) {
-        //TODO 订单的数据处理封装
+    public R<AnalysisOrders> analysisOrders() {
+        List<Orders> list = orderService.list();
+        //店铺总单数
+        int count = list.size();
+        //对店铺订单从高到低消费额降序排列
+        List<Orders> orderBymoneySort = list.stream().sorted(Comparator.comparing(Orders::getAmount).reversed()).collect(Collectors.toList());
+        BigDecimal totalMoney = null;
+        list.forEach(t -> {
+            totalMoney.add(t.getAmount());
+            t.setAmount(totalMoney);
+        });
+        ArrayList<User> userList = new ArrayList<>();
+        list.forEach(t -> {
+            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id", t.getUserId());
+            User one = userService.getOne(queryWrapper);
+            userList.add(one);
+        });
+        List<User> users = userList.stream().sorted(Comparator.comparing(User::getAmount).reversed()).collect(Collectors.toList());
+
         AnalysisOrders analysisOrders = AnalysisOrders.builder()
-//                .maxOrders()
-//                .minOrders()
-//                .midOrders()
-//                .maxConsumer()
-//                .minConsumer()
-//                .midConsumer()
-//                .averagePrice()
-//                .hotCommodityList()
-//                .totalOrders()
+                .orderBymoneySort(orderBymoneySort)
+                .orderByUserId(users)
+                .averagePrice(totalMoney.divide(BigDecimal.valueOf(count), 20, BigDecimal.ROUND_HALF_UP))
+                .totalOrders(count)
+                .totalMoeny(totalMoney)
                 .build();
         return R.success(analysisOrders);
+    }
+
+    public static Date getTimesmorning() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    // 获得本周一0点时间
+    public static Date getTimesWeekmorning() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        return cal.getTime();
     }
 
     /**
@@ -138,19 +174,51 @@ public class OrderController {
      */
     @GetMapping("/analysisOrderByCustomer")
     public R<AnalysisOrdersByUser> analysisOrderByCustomer(@RequestBody User user) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        Calendar caln = Calendar.getInstance();
+        caln.setTime(getTimesWeekmorning());
+        caln.add(Calendar.DAY_OF_WEEK, 7);
+        QueryWrapper<Orders> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", user.getId());
+        queryWrapper.between("checkout_time", cal.getTime(), caln.getTime());
+        List<Orders> list = orderService.list(queryWrapper);
+        int count = list.size();
 
 
-        //TODO 属于用户的订单数据处理封装
+        BigDecimal totalMoney = null;
+        list.forEach(t -> {
+            totalMoney.add(t.getAmount());
+            t.setAmount(totalMoney);
+        });
+        BigDecimal ava = totalMoney.divide(BigDecimal.valueOf(count), 20, BigDecimal.ROUND_HALF_UP);
+
+        //订单消费周内七次的均值
+        String cost = null;
+        BigDecimal divide = totalMoney.divide(BigDecimal.valueOf(7), 20, BigDecimal.ROUND_HALF_UP);
+        if (divide.compareTo(middle) != -1) {
+            cost = "high";
+        } else if (divide.compareTo(middle) != 1) {
+            cost = "low";
+        }
         AnalysisOrdersByUser analysisOrdersByUser = AnalysisOrdersByUser.builder()
-//                .costAbility()
-//                .averagePriceInWeek()
-//                .OrdersInWeek()
-//                .OrdersInMouth()
-//                .HotDishlist()
+                .costAbility(cost)
+                .averagePriceInWeek(ava)
+                .OrdersInWeek(list)
+                .OrdersInWeekNum(count)
                 .build();
         return R.success(analysisOrdersByUser);
     }
 
-    //TODO 订单状态的改变  配送完成
+    @GetMapping("/completeOrder")
+    public R<Boolean> completeOrder(@RequestBody Orders orders) {
+        //构造器对象
+        orders.setStatus(4);
+        QueryWrapper<Orders> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", orders.getId());
+        boolean b = orderService.updateById(orders);
+        return R.success(b);
 
+    }
 }

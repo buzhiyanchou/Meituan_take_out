@@ -15,24 +15,18 @@ import java.util.List;
 @Builder
 public class AnalysisOrders {
 
-    //高消费订单  以价格降序
-    private List<Orders> maxOrders;
-    //低消费订单  以价格降序
-    private List<Orders> minOrders;
-    //中消费订单  以价格降序
-    private List<Orders> midOrders;
-    //高消费用户  以价格降序
-    private List<Orders> maxConsumer;
-    //低消费用户  以价格降序
-    private List<Orders> minConsumer;
-    //中消费用户  以价格降序
-    private List<Orders> midConsumer;
+    //消费订单  以消费额    订单降序
+    private List<Orders> orderBymoneySort;
+    //消费用户  以消费额   人员降序
+    private List<User> orderByUserId;
     //热销商品  以价格降序
     private List<Dish> hotCommodityList;
     //整体的订单的均价
     private BigDecimal averagePrice;
     //单量
     private Integer totalOrders;
+    //订单总额
+    private BigDecimal totalMoeny;
 
 
 }
