@@ -24,7 +24,7 @@
             <div class="divContainer">
                 <el-input placeholder=" 请输入账号" v-model="form.name" @change="getCode"  maxlength='20'/></el-input>
                 <div class="divSplit"></div>
-                <el-input placeholder=" 请输入密码" v-model="form.pwd"  maxlength='20'/></el-input>
+                <el-input placeholder=" 请输入密码" type="password" v-model="form.pwd"  maxlength='20'/></el-input>
                 
             </div>
             <div class="divMsg" v-if="msgFlag">账号输入不正确，请重新输入</div>
