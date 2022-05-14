@@ -23,6 +23,5 @@ public class AnalysisOrdersByUser {
     private Integer OrdersInWeekNum;
     //本周订单
     private List<Orders> OrdersInWeek;
-    //客户热购商品
-    private List<Dish> hotDishlist;
+
 }

@@ -9,7 +9,6 @@ import com.meituan.reggie.entity.*;
 import com.meituan.reggie.service.OrderService;
 import com.meituan.reggie.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.jacoco.agent.rt.internal_f3994fa.core.internal.flow.IFrame;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 订单
@@ -125,16 +123,23 @@ public class OrderController {
         int count = list.size();
         //对店铺订单从高到低消费额降序排列
         List<Orders> orderBymoneySort = list.stream().sorted(Comparator.comparing(Orders::getAmount).reversed()).collect(Collectors.toList());
-        BigDecimal totalMoney = null;
-        list.forEach(t -> {
-            totalMoney.add(t.getAmount());
-            t.setAmount(totalMoney);
+        QueryWrapper<User> queryWrappern = new QueryWrapper<>();
+        Map<Long, User> collect = userService.list(queryWrappern).stream().collect(Collectors.toMap(User::getId, a -> a, (k1, k2) -> k1));
+        Map<Long, Orders> ordersMap = list.stream().sorted(Comparator.comparing(Orders::getAmount).reversed()).collect(Collectors.toMap(Orders::getId, a -> a, (k1, k2) -> k1));
+        orderBymoneySort.forEach(t -> {
+            t.setUserName(collect.get(t.getUserId()).getName());
         });
+        BigDecimal totalMoney = BigDecimal.ZERO;
+        for (int i = 0; i < list.size(); i++) {
+            totalMoney = totalMoney.add(ordersMap.get(list.get(i).getId()).getAmount());
+        }
+        Map<Long, Orders> map = list.stream().collect(Collectors.toMap(Orders::getUserId, a -> a, (k1, k2) -> k1));
         ArrayList<User> userList = new ArrayList<>();
         list.forEach(t -> {
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("id", t.getUserId());
             User one = userService.getOne(queryWrapper);
+            one.setAmount(map.get(t.getUserId()).getAmount());
             userList.add(one);
         });
         List<User> users = userList.stream().sorted(Comparator.comparing(User::getAmount).reversed()).collect(Collectors.toList());
@@ -147,15 +152,6 @@ public class OrderController {
                 .totalMoeny(totalMoney)
                 .build();
         return R.success(analysisOrders);
-    }
-
-    public static Date getTimesmorning() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTime();
     }
 
     // 获得本周一0点时间
@@ -181,17 +177,17 @@ public class OrderController {
         caln.setTime(getTimesWeekmorning());
         caln.add(Calendar.DAY_OF_WEEK, 7);
         QueryWrapper<Orders> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id", user.getId());
+        queryWrapper.eq("user_id", user.getId());
         queryWrapper.between("checkout_time", cal.getTime(), caln.getTime());
         List<Orders> list = orderService.list(queryWrapper);
         int count = list.size();
+        Map<Long, Orders> ordersMap = list.stream().sorted(Comparator.comparing(Orders::getAmount).reversed()).collect(Collectors.toMap(Orders::getId, a -> a, (k1, k2) -> k1));
 
+        BigDecimal totalMoney = BigDecimal.ZERO;
 
-        BigDecimal totalMoney = null;
-        list.forEach(t -> {
-            totalMoney.add(t.getAmount());
-            t.setAmount(totalMoney);
-        });
+        for (int i = 0; i < list.size(); i++) {
+            totalMoney = totalMoney.add(ordersMap.get(list.get(i).getId()).getAmount());
+        }
         BigDecimal ava = totalMoney.divide(BigDecimal.valueOf(count), 20, BigDecimal.ROUND_HALF_UP);
 
         //订单消费周内七次的均值

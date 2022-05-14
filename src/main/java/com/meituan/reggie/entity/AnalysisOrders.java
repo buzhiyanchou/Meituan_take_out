@@ -19,8 +19,6 @@ public class AnalysisOrders {
     private List<Orders> orderBymoneySort;
     //消费用户  以消费额   人员降序
     private List<User> orderByUserId;
-    //热销商品  以价格降序
-    private List<Dish> hotCommodityList;
     //整体的订单的均价
     private BigDecimal averagePrice;
     //单量

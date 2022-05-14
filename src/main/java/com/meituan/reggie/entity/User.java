@@ -1,5 +1,6 @@
 package com.meituan.reggie.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -36,6 +37,7 @@ public class User implements Serializable {
     private String idNumber;
 
     //实收金额
+    @TableField(exist = false)
     private BigDecimal amount;
     //头像
     private String avatar;
