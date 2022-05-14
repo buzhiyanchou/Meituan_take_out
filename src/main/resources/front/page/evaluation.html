@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
+        <title>美团外卖</title>
+        <link rel="icon" href="./../images/favico.ico">
+        <!--不同屏幕尺寸根字体设置-->
+        <script src="./../js/base.js"></script>
+        <!--element-ui的样式-->
+        <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css" />
+        <!-- 引入样式  -->
+        <link rel="stylesheet" href="../styles/index.css" />
+        <!--引入vant样式-->
+        <link rel="stylesheet" href="../styles/vant.min.css"/>
+        <!--本页面内容的样式-->
+        <link rel="stylesheet" href="./../styles/evaluation.css" />
+    </head>
+    <body>
+        <div id="order" class="app">
+            <div class="divHead">
+                <div class="divTitle">
+                    <i class="el-icon-arrow-left" @click="goBack"></i>美团外卖
+                </div>
+            </div>
+            <div class="divBody">
+                <div class="textBox">
+                  <div class="text">
+                    您对菜品满意吗?
+                  </div>
+                  <div class="text-right">
+                    已对商家匿名
+                  </div>
+                </div>
+                <div class="btn">
+                  <div class="btnAgain" :class="{btnPhone : evaluate.evaStutas === 3}" @click="evaluation(3)">差评</div>
+                  <div class="btnAgain" :class="{btnPhone : evaluate.evaStutas === 2}" @click="evaluation(2)">一般</div>
+                  <div class="btnAgain" :class="{btnPhone : evaluate.evaStutas === 1}" @click="evaluation(1)">好评</div>
+                </div>
+
+                <div>
+                  <van-field
+                    v-model="evaluate.evaluate"
+                    rows="2"
+                    label="评价"
+                    type="textarea"
+                    maxlength="50"
+                    placeholder="请输入留言"
+                    show-word-limit
+                    />
+                  
+                </div>
+                <div class="btnAgain submit" @click="submit">提交</div>
+                <van-popup click-overlay="closeModel" round v-model="show" style = "padding-top: 10rem;padding-left: 10rem;padding-bottom: 5rem;padding-right: 5rem;">
+                  <van-icon name="passed" size="17rem" color="#4f9a48"/>
+                  感谢您的评价！
+                  <div class="btnAgain submit" @click="modelBack">确定</div>
+                </van-popup>
+            </div>
+        </div>
+        <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+        <script src="../../backend/plugins/vue/vue.js"></script>
+        <!-- 引入组件库 -->
+        <script src="../../backend/plugins/element-ui/index.js"></script>
+        <!-- 引入vant组件 -->
+        <script src="./../js/vant.min.js"></script>    
+        <!-- 引入axios -->
+        <script src="../../backend/plugins/axios/axios.min.js"></script>
+        <script src="./../js/request.js"></script>
+        <script src="./../api/order.js"></script>
+        <script>
+        new Vue({
+            el:"#order",
+            data(){
+                return {
+                  evaluate:{
+                    id : '',
+                    evaluate : '',
+                    evaStutas : 1
+                  },
+                  show: false
+                }
+            },
+            computed:{},
+            created(){
+              var query = window.location.search.substring(1);
+              // console.log("---------- url -----------------");
+              // console.log(query.split("=")[1]);
+              // console.log("---------- url -----------------");
+              this.evaluate.id = query.split("=")[1]
+            },
+            mounted(){},
+            methods:{
+                closeModel(){
+                  this.show = false
+                },
+                evaluation(status){
+                    this.evaluate.evaStutas = status
+                },
+                modelBack(){
+                  this.show = false
+                  window.requestAnimationFrame(()=>{
+                    window.location.href= '/front/page/order.html'
+                  })  
+                },
+                goBack(){
+                    const url = document.referrer
+                    //表示是从订单页面跳转过来的
+                    if(url.includes('success')){
+                        window.requestAnimationFrame(()=>{
+                            window.location.href= '/front/page/order.html'
+                        })   
+                    }else{
+                        history.go(-1)
+                    }
+                },
+                initData(){
+                    this.getList()
+                },
+                async submit(){
+                  const res = await evaluateOrder(this.evaluate)
+                  console.log(res);
+                  if(res.data === true || res.data === 'true'){
+                    this.show = true
+                    // window.requestAnimationFrame(()=>{
+                    //     window.location.href= '/front/index.html'
+                    // })                           
+                  }else{
+                      this.$notify({ type:'warning', message: '评价失败'});
+                  }
+                },
+                
+            }
+        })
+        </script>
+    </body>
+</html>

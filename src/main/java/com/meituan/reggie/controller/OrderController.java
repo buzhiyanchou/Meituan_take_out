@@ -72,7 +72,7 @@ public class OrderController {
      * @param orders
      * @return
      */
-    @GetMapping("/evaluateOrder")
+    @PostMapping("/evaluateOrder")
     public R<Boolean> evaluateOrder(@RequestBody Orders orders) {
         String evaluate = orders.getEvaluate();
         //构造器对象

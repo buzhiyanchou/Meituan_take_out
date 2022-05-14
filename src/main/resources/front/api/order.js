@@ -18,7 +18,7 @@ function orderListApi() {
 //分页查询订单
 function orderPagingApi(data) {
   return $axios({
-      'url': '/order/userPage',
+      'url': '/order/page',
       'method': 'get',
       params:{...data}
   })
@@ -30,5 +30,13 @@ function orderAgainApi(data) {
       'url': '/order/again',
       'method': 'post',
       data
+  })
+}
+// 评价
+function evaluateOrder(data) {
+  return $axios({
+    'url': '/order/evaluateOrder',
+    'method': 'post',
+    data
   })
 }

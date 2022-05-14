@@ -47,6 +47,7 @@
                             <span>共{{order.sumNum}} 件商品,实付</span><span class="price">￥{{order.amount}}</span>
                         </div>
                         <div class="btn" v-if="order.status === 4">
+                            <div class="btnAgain" @click="evaluation(order.id)">评价</div>
                             <div class="btnAgain" @click="addOrderAgain(order)">再来一单</div>
                         </div>
                     </van-cell>
@@ -89,12 +90,20 @@
             },
             mounted(){},
             methods:{
+                evaluation(id){
+                    window.requestAnimationFrame(()=>{
+                        // console.log("---------- id -----------------");
+                        // console.log(id);
+                        // console.log("---------- id -----------------");
+                        window.location.href= '/front/page/evaluation.html' + '?id=' + id
+                    })
+                },
                 goBack(){
                     const url = document.referrer
                     //表示是从订单页面跳转过来的
                     if(url.includes('success')){
                         window.requestAnimationFrame(()=>{
-                                window.location.href= '/front/index.html'
+                            window.location.href= '/front/index.html'
                         })   
                     }else{
                         history.go(-1)
@@ -115,9 +124,9 @@
                         if(records && Array.isArray(records)){
                             records.forEach(item=>{
                                 let number = 0
-                                item.orderDetails.forEach(ele=>{
-                                    number += ele.number
-                                })
+                                // item.orderDetails.forEach(ele=>{
+                                //     number += ele.number
+                                // })
                                 item.sumNum = number
                             })
                         }
