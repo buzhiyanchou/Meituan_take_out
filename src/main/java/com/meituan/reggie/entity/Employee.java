@@ -17,6 +17,8 @@ public class Employee implements Serializable {
     private Long id;
 
     private String username;
+    @TableField(exist = false)
+    private Boolean flag;
 
     private String name;
 

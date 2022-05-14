@@ -33,9 +33,9 @@ public class EmployeeController {
      * @return
      */
     @PostMapping("/login")
-    public R<Employee> login(HttpServletRequest request, @RequestBody Employee employee, Boolean flag) {
+    public R<Employee> login(HttpServletRequest request, @RequestBody Employee employee) {
         //平台后台登录true
-        if (Boolean.TRUE.equals(employee.getUsername())) {
+        if (Boolean.TRUE.equals(employee.getFlag())) {
             //1、将页面提交的密码password进行md5加密处理
             String password = employee.getPassword();
             password = DigestUtils.md5DigestAsHex(password.getBytes());
@@ -64,7 +64,7 @@ public class EmployeeController {
             return R.success(emp);
 
             //店铺端登录传false
-        } else if (Boolean.FALSE.equals(flag)) {
+        } else if (Boolean.FALSE.equals(employee.getFlag())) {
             //1、将页面提交的密码password
             String password = employee.getPassword();
 
