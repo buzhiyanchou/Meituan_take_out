@@ -229,8 +229,8 @@ public class OrderController {
             divide = totalMoney.divide(BigDecimal.valueOf(7), 20, BigDecimal.ROUND_HALF_UP);
         }
         AnalysisOrdersByUser analysisOrdersByUser = AnalysisOrdersByUser.builder()
-                .costAbilityScore(divide)
-                .averagePriceInWeek(ava)
+                .costAbilityScore(new Double(String.valueOf(divide)))
+                .averagePriceInWeek(new Double(String.valueOf(ava)))
                 .OrdersInWeek(list)
                 .OrdersInWeekNum(count)
                 .build();

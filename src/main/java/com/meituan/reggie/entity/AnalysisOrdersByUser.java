@@ -16,9 +16,9 @@ import java.util.List;
 public class AnalysisOrdersByUser {
 
     //消费能力分数 周平均消费达700则为高消费、500中消费、300低消费    该参数灵活配置
-    private BigDecimal costAbilityScore;
+    private Double costAbilityScore;
     //该用户本周的订单的均价
-    private BigDecimal averagePriceInWeek;
+    private Double averagePriceInWeek;
     //本周单量数量
     private Integer OrdersInWeekNum;
     //本周订单
