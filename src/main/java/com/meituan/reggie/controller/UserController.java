@@ -97,17 +97,17 @@ public class UserController {
         return R.success(Boolean.FALSE);
     }
 
-    /**
-     * 注册用户账号
-     *
-     * @param user
-     * @return
-     */
-    @PostMapping("/register")
-    public R<Boolean> register(@RequestBody User user) {
-        boolean result = userService.save(user);
-        return R.success(result);
-    }
+//    /**
+//     * 注册用户账号
+//     *
+//     * @param user
+//     * @return
+//     */
+//    @PostMapping("/register")
+//    public R<Boolean> register(@RequestBody User user) {
+//        boolean result = userService.save(user);
+//        return R.success(result);
+//    }
 
 
     /**
