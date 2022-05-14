@@ -68,14 +68,14 @@
                         const res = await loginApi(this.form)
                         this.loading = false
                         console.log(res);
-                        // if(res.code === 1){
-                        //     sessionStorage.setItem("userPhone",this.form.phone)
-                        //     window.requestAnimationFrame(()=>{
-                        //         window.location.href= '/front/index.html'
-                        //     })                           
-                        // }else{
-                        //     this.$notify({ type:'warning', message:res.msg});
-                        // }
+                        if(res.code === 1){
+                            sessionStorage.setItem("userId",res.data.id)
+                            window.requestAnimationFrame(()=>{
+                                window.location.href= '/front/index.html'
+                            })                           
+                        }else{
+                            this.$notify({ type:'warning', message:res.msg});
+                        }
                     }else{
                         this.$notify({ type:'warning', message:'请输入手机号码'});
                     }
