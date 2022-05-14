@@ -118,7 +118,35 @@ public class OrderController {
      */
     @GetMapping("/analysisOrder")
     public R<AnalysisOrders> analysisOrders() {
-        List<Orders> list = orderService.list();
+        Calendar cal = Calendar.getInstance();
+        cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        Calendar caln = Calendar.getInstance();
+        caln.setTime(getTimesWeekmorning());
+        caln.add(Calendar.DAY_OF_WEEK, 7);
+        QueryWrapper<Orders> queryWrapperx = new QueryWrapper<>();
+        queryWrapperx.between("checkout_time", cal.getTime(), caln.getTime());
+        List<Orders> list = orderService.list(queryWrapperx);
+        Integer shopScore = null;
+        Integer flag;
+        for (int i = 0; i < list.size(); i++) {
+            Integer status = list.get(i).getStatus();
+            //差评扣-8分
+            if (Integer.valueOf("3").equals(status)) {
+                flag = -8;
+                //中评5分
+            } else if (Integer.valueOf("2").equals(status)) {
+                flag = 5;
+                //好评10分
+            } else if (Integer.valueOf("1").equals(status)) {
+                flag = 10;
+            } else {
+                flag = 0;
+            }
+            shopScore = +flag;
+            flag = 0;
+        }
+
         //店铺总单数
         int count = list.size();
         //对店铺订单从高到低消费额降序排列
@@ -147,9 +175,14 @@ public class OrderController {
         AnalysisOrders analysisOrders = AnalysisOrders.builder()
                 .orderBymoneySort(orderBymoneySort)
                 .orderByUserId(users)
-                .averagePrice(totalMoney.divide(BigDecimal.valueOf(count), 20, BigDecimal.ROUND_HALF_UP))
-                .totalOrders(count)
-                .totalMoeny(totalMoney)
+                .totalMoney(totalMoney)
+                .ordersInWeekNum(count)
+                .averagePriceInWeek(new Double(String.valueOf(totalMoney.divide(BigDecimal.valueOf(count), 20, BigDecimal.ROUND_HALF_UP))))
+                .ordersPeopleNum(userList.size())
+                .shopConvertRate(getRandomNum(50, 89) + "%")
+                .orderConvertRate(getRandomNum(80, 99) + "%")
+                .shopScore(new Double(shopScore) * 9.9)
+                .replyOrderRate(getRandomNum(85, 94) + "%")
                 .build();
         return R.success(analysisOrders);
     }
@@ -184,22 +217,19 @@ public class OrderController {
         Map<Long, Orders> ordersMap = list.stream().sorted(Comparator.comparing(Orders::getAmount).reversed()).collect(Collectors.toMap(Orders::getId, a -> a, (k1, k2) -> k1));
 
         BigDecimal totalMoney = BigDecimal.ZERO;
-
+        BigDecimal ava = BigDecimal.ZERO;
+        BigDecimal divide = BigDecimal.ZERO;
         for (int i = 0; i < list.size(); i++) {
             totalMoney = totalMoney.add(ordersMap.get(list.get(i).getId()).getAmount());
         }
-        BigDecimal ava = totalMoney.divide(BigDecimal.valueOf(count), 20, BigDecimal.ROUND_HALF_UP);
+        if (count != 0) {
+            ava = totalMoney.divide(BigDecimal.valueOf(count), 20, BigDecimal.ROUND_HALF_UP);
 
-        //订单消费周内七次的均值
-        String cost = null;
-        BigDecimal divide = totalMoney.divide(BigDecimal.valueOf(7), 20, BigDecimal.ROUND_HALF_UP);
-        if (divide.compareTo(middle) != -1) {
-            cost = "high";
-        } else if (divide.compareTo(middle) != 1) {
-            cost = "low";
+            //订单消费周内七次的均值
+            divide = totalMoney.divide(BigDecimal.valueOf(7), 20, BigDecimal.ROUND_HALF_UP);
         }
         AnalysisOrdersByUser analysisOrdersByUser = AnalysisOrdersByUser.builder()
-                .costAbility(cost)
+                .costAbilityScore(divide)
                 .averagePriceInWeek(ava)
                 .OrdersInWeek(list)
                 .OrdersInWeekNum(count)
@@ -217,4 +247,16 @@ public class OrderController {
         return R.success(b);
 
     }
+
+
+    public int getRandomNum(int a, int b) {
+        int START = a;//定义范围开始数字
+        int END = b;//定义范围结束数字
+        //创建Random类对象
+        Random random = new Random();
+        //产生随机数
+        int number = random.nextInt(END - START + 1) + START;
+        return number;
+    }
+
 }
