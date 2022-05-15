@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,6 +48,7 @@ public class UserController {
     @Autowired
     private ShoppingCartService shoppingCartService;
 
+    static HashMap<String, String> codeMap;
 
     /**
      * 发送手机短信验证码
@@ -58,7 +60,8 @@ public class UserController {
     public R<String> sendMsg(@RequestBody User user, HttpSession session) {
         //获取手机号
         String phone = user.getPhone();
-
+        HashMap<String, String> objectObjectHashMap = new HashMap<>();
+        codeMap = objectObjectHashMap;
         if (StringUtils.isNotEmpty(phone)) {
             //生成随机的4位验证码
             String code = ValidateCodeUtils.generateValidateCode(4).toString();
@@ -69,7 +72,7 @@ public class UserController {
 
             //需要将生成的验证码保存到Session
             session.setAttribute(phone, code);
-
+            codeMap.put(phone, code);
             return R.success("手机验证码短信发送成功,您得验证码是:" + code);
         }
 
@@ -185,17 +188,22 @@ public class UserController {
         //从Session中获取保存的验证码
         Object codeInSession = session.getAttribute(phone);
         //进行验证码的比对（页面提交的验证码和Session中保存的验证码比对）
-//        if (codeInSession != null && codeInSession.equals(code)) {
-        //如果能够比对成功，说明验证码验证成功
-        session.setAttribute("user", user.getId());
-        user.setStatus(1);
-        user.setPhone(phone);
-        user.setName(name);
-        user.setPassword(password);
-        boolean result = userService.save(user);
-        return R.success(result);
-//        }
-//        return R.error("注册失败!");
+
+        try {
+            if (ObjectUtils.isNotNull(codeMap.get(phone)) && code.equals(codeMap.get(phone))) {
+                //如果能够比对成功，说明验证码验证成功
+                session.setAttribute("user", user.getId());
+                user.setStatus(1);
+                user.setPhone(phone);
+                user.setName(name);
+                user.setPassword(password);
+                boolean result = userService.save(user);
+                return R.success(result);
+            }
+        } catch (Exception e) {
+            return R.error("注册失败!请获取验证码~");
+        }
+        return R.error("注册失败!");
     }
 
     //抽离的一个方法，通过订单id查询订单明细，得到一个订单明细的集合
