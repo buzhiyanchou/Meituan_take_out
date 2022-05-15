@@ -130,7 +130,9 @@
                 async getLatestOrder(){
                     const params = {
                         page:1,
-                        pageSize:1
+                        pageSize:1,
+                        flag: false,
+                        userId: sessionStorage.getItem("userId")
                     }
                     const res = await orderPagingApi(params)
                     if(res.code === 1){

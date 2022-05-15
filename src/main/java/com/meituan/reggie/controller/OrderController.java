@@ -55,8 +55,19 @@ public class OrderController {
      * @return
      */
     @GetMapping("/page")
-    public R<Page> page(int page, int pageSize) {
-
+    public R<Page> page(int page, int pageSize, Boolean flag, String userId) {
+        if (Boolean.FALSE.equals(flag)) {
+            //分页构造器对象
+            Page<Orders> pageInfo = new Page<>(page, pageSize);
+            //构造条件查询对象
+            QueryWrapper<Orders> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("user_id", userId);
+            orderService.page(pageInfo, queryWrapper);
+            pageInfo.getRecords().stream().
+                    sorted(Comparator.comparing(Orders::getOrderTime).
+                            reversed()).collect(Collectors.toList());
+            return R.success(pageInfo);
+        }
         //分页构造器对象
         Page<Orders> pageInfo = new Page<>(page, pageSize);
         //构造条件查询对象

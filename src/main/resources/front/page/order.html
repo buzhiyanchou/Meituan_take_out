@@ -77,7 +77,9 @@
                 return {
                     paging:{
                         page:1,
-                        pageSize:5
+                        pageSize:5,
+                        flag: false,
+                        userId: sessionStorage.getItem("userId")
                     },
                     orderList:[],
                     loading:false,

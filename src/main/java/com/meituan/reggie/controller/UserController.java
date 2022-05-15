@@ -26,6 +26,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -77,6 +79,19 @@ public class UserController {
         }
 
         return R.error("短信发送失败");
+    }
+
+    /**
+     * loginout
+     *
+     * @return
+     */
+    @PostMapping("/loginout")
+    public R logout(
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        request.getSession().invalidate();
+        return R.success("退出成功！");
     }
 
     /**
@@ -160,9 +175,13 @@ public class UserController {
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("name", accountName);
             User one = userService.getOne(queryWrapper);
-            if (accountName.equals(one.getName()) && pwd.equals(one.getPassword())) {
-                session.setAttribute("user", one.getId());
-                return R.success(one);
+            try {
+                if (accountName.equals(one.getName()) && pwd.equals(one.getPassword())) {
+                    session.setAttribute("user", one.getId());
+                    return R.success(one);
+                }
+            } catch (Exception e) {
+                return R.error("请确认该账户存在~");
             }
         }
 //        }
