@@ -51,12 +51,13 @@ public class UserController {
     /**
      * 发送手机短信验证码
      *
+     * @param user
      * @return
      */
     @PostMapping("/sendMsg")
-    public R<String> sendMsg(@RequestBody Map map, HttpSession session) {
+    public R<String> sendMsg(@RequestBody User user, HttpSession session) {
         //获取手机号
-        String phone = map.get("phone").toString();
+        String phone = user.getPhone();
 
         if (StringUtils.isNotEmpty(phone)) {
             //生成随机的4位验证码
