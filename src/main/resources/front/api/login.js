@@ -21,4 +21,19 @@ function loginoutApi() {
   })
 }
 
-  
+
+function registerApi(data) {
+  return $axios({
+      'url': '/user/register',
+      'method': 'post',
+      data
+  })
+}
+
+function checkAccountApi(data) {
+  return $axios({
+      'url': '/user/checkAccount',
+      'method': 'post',
+      data
+  })
+}

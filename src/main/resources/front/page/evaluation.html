@@ -100,9 +100,7 @@
                 },
                 modelBack(){
                   this.show = false
-                  window.requestAnimationFrame(()=>{
-                    window.location.href= '/front/page/order.html'
-                  })  
+                  history.go(-1)
                 },
                 goBack(){
                     const url = document.referrer
