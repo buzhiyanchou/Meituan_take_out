@@ -1,42 +1,107 @@
-<!DOCTYPE HTML>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
-    <meta charset="UTF-8">
-    <title>注册</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
+    <title>美团外卖</title>
+    <link rel="icon" href="./../images/favico.ico">
+    <!--不同屏幕尺寸根字体设置-->
+    <script src="./../js/base.js"></script>
+    <!--element-ui的样式-->
+    <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css" />
+    <!--引入vant样式-->
+    <link rel="stylesheet" href="../styles/vant.min.css" />
+    <!-- 引入样式  -->
+    <link rel="stylesheet" href="../styles/index.css" />
+    <!--本页面内容的样式-->
+    <link rel="stylesheet" href="./../styles/login.css" />
 </head>
-<body style="padding-top: 200px;width: 100%;height: 100%;
--webkit-background-size: 100%;background-size: 100%;" th:background="@{/images/register.jpg}">
 
-    <div class="container-fluid">
-        <div class="row body">
-            <div class="col-xs-2 col-md-2"></div>
-            <div class="col-xs-8 col-md-8">
-                <form class="form-signin" method="post" th:action="@{/register}" style="padding: 0px 500px 0 500px;">
-                    <h2 class="form-signin-heading">商户注册</h2>
-                    <label for="inputMobile" class="sr-only">手机号码</label>
-                    <input style="margin-bottom: 10px;"
-                           type="mobile" id="inputMobile" class="form-control" name="username"
-                           placeholder="手机号码" required="" autofocus="">
+<body>
+    <div id="login" v-loading="loading">
+        <div class="divHead">登录</div>
+        <div class="divContainer">
+            <el-input placeholder=" 请输入账号" v-model="form.phone" maxlength='20' />
+            </el-input>
+            <el-input placeholder=" 请输入密码" v-model="form.phone" maxlength='20' />
+            </el-input>
+            <el-input placeholder=" 请输入手机号码" v-model="form.phone" maxlength='20' />
+            </el-input>
+            <div class="divSplit"></div>
+            <el-input placeholder=" 请输入验证码" v-model="form.code" maxlength='20' />
+            </el-input>
+            <span @click='getCode'>获取验证码</span>
 
-                    <label for="inputPassword" class="sr-only">密码</label>
-                    <input type="password" id="inputPassword" class="form-control" name="password" placeholder="密码" required="">
-                    <div class="checkbox">
-
-                    </div>
-                    <button class="btn btn-primary btn-block" type="submit">确定注册</button>
-                    <a class="btn btn-info btn-block" href="login" style="color: #ffffff;">已有账号，去登录</a>
-                </form>
-            </div>
-            <div class="col-xs-2 col-md-2"></div>
         </div>
-        <!--<div th:replace="/common/footer::footer"></div>-->
+        <div class="divMsg" v-if="msgFlag">手机号输入不正确，请重新输入</div>
+        <el-button type="primary" :class="{btnSubmit:1===1,btnNoPhone:!form.phone,btnPhone:form.phone}"
+            @click="btnLogin">登录</el-button>
+
     </div>
-    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
-    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
-    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script th:src="@{/js/login.js}"></script>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="../../backend/plugins/vue/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="../../backend/plugins/element-ui/index.js"></script>
+    <!-- 引入vant样式 -->
+    <script src="./../js/vant.min.js"></script>
+    <!-- 引入axios -->
+    <script src="../../backend/plugins/axios/axios.min.js"></script>
+    <script src="./../js/request.js"></script>
+    <script src="./../api/login.js"></script>
 </body>
+<script>
+    new Vue({
+        el: "#login",
+        data() {
+            return {
+                form: {
+                    phone: '',
+                    code: '',
+                    name: '',
+                    pwd: ''
+                },
+                msgFlag: false,
+                loading: false
+            }
+        },
+        computed: {},
+        created() { },
+        mounted() { },
+        methods: {
+            getCode() {
+                this.form.code = ''
+                const regex = /^(13[0-9]{9})|(15[0-9]{9})|(17[0-9]{9})|(18[0-9]{9})|(19[0-9]{9})$/;
+                if (regex.test(this.form.phone)) {
+                    this.msgFlag = false
+                    //this.form.code = (Math.random()*1000000).toFixed(0)
+                    sendMsgApi({ phone: this.form.phone })
+                } else {
+                    this.msgFlag = true
+                }
+            },
+            async btnLogin() {
+                if (this.form.phone && this.form.code) {
+                    this.loading = true
+                    const res = await loginApi(this.form)
+                    this.loading = false
+                    if (res.code === 1) {
+                        sessionStorage.setItem("userPhone", this.form.phone)
+                        window.requestAnimationFrame(() => {
+                            window.location.href = '/front/index.html'
+                        })
+                    } else {
+                        this.$notify({ type: 'warning', message: res.msg });
+                    }
+                } else {
+                    this.$notify({ type: 'warning', message: '请输入手机号码' });
+                }
+            }
+        }
+    })
+</script>
+
 </html>
