@@ -29,7 +29,7 @@
             </div>
             <div class="divMsg" v-if="msgFlag">账号输入不正确，请重新输入</div>
             <el-button type="primary" :class="{btnSubmit:1===1,btnNoPhone:!form.name,btnPhone:form.name}" @click="btnLogin">登录</el-button>
-            <el-button type="primary" class="btnSubmit btnPhone"  @click="btnLogin">注册</el-button> 
+            <el-button type="primary" class="btnSubmit btnPhone"  @click="gotoRegister">注册</el-button> 
         </div>
         <!-- 开发环境版本，包含了有帮助的命令行警告 -->
         <script src="../../backend/plugins/vue/vue.js"></script>
@@ -61,6 +61,9 @@
             methods:{
                 getCode(){
                     this.msgFlag = false
+                },
+                gotoRegister(){
+                    window.location.href = './register.html'
                 },
                 async btnLogin(){
                     if(this.form.name && this.form.pwd){
