@@ -237,15 +237,19 @@ public class OrderController {
         return R.success(analysisOrdersByUser);
     }
 
-    @GetMapping("/completeOrder")
-    public R<Boolean> completeOrder(@RequestBody Orders orders) {
+    @PostMapping("/changeStatus")
+    public R<Orders> changeStatus(@RequestBody OrderStutas orderStutas) {
         //构造器对象
-        orders.setStatus(4);
         QueryWrapper<Orders> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id", orders.getId());
-        boolean b = orderService.updateById(orders);
-        return R.success(b);
-
+        queryWrapper.eq("id", orderStutas.getOrderId());
+        Orders one = orderService.getOne(queryWrapper);
+        one.setStatus(orderStutas.getStatus());
+        boolean save = orderService.update(one,queryWrapper);
+        if (Boolean.TRUE.equals(save)) {
+            return R.success(one);
+        } else {
+            return R.error("更新失败~");
+        }
     }
 
 
