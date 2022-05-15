@@ -184,7 +184,7 @@
                     const res = await loginoutApi()
                     if(res.code === 1){
                         window.requestAnimationFrame(()=>{
-                            window.location.href = 'loginNew.html'
+                            window.location.href = 'login.html'
                         }) 
                     }else{
                         this.$notify({ type:'warning', message:res.msg});
