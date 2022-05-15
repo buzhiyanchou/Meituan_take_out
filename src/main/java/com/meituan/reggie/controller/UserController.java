@@ -183,15 +183,15 @@ public class UserController {
         //从Session中获取保存的验证码
         Object codeInSession = session.getAttribute(phone);
         //进行验证码的比对（页面提交的验证码和Session中保存的验证码比对）
-        if (codeInSession != null && codeInSession.equals(code)) {
+//        if (codeInSession != null && codeInSession.equals(code)) {
             //如果能够比对成功，说明验证码验证成功
             session.setAttribute("user", user.getId());
             user.setStatus(1);
             user.setPhone(phone);
             boolean result = userService.save(user);
             return R.success(result);
-        }
-        return R.error("注册失败!");
+//        }
+//        return R.error("注册失败!");
     }
 
     //抽离的一个方法，通过订单id查询订单明细，得到一个订单明细的集合
