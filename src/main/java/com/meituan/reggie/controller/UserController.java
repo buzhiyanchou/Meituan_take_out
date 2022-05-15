@@ -70,7 +70,7 @@ public class UserController {
             //需要将生成的验证码保存到Session
             session.setAttribute(phone, code);
 
-            return R.success("手机验证码短信发送成功");
+            return R.success("手机验证码短信发送成功,您得验证码是:"+code);
         }
 
         return R.error("短信发送失败");
