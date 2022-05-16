@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <link rel="stylesheet" href="../../styles/common.css" />
+  <link rel="stylesheet" href="../../styles/page.css" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+  <style>
+    .data-table td {
+      line-height: 70px;
+      width: 240px;
+      text-align: center;
+      border: 1px solid #CCCCCC;
+      background-color: aliceblue;
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="dashboard-container" id="order-app" v-loading="loading" style="display:flex ;flex-wrap: wrap;">
+    <div id="myChart" :style="{width: '700px', height: '500px'}"></div>
+    <div :style="{width: '700px', height: '500px'}">
+      <table class="data-table">
+        <tr v-for="item,index in keys">
+          <td>{{ name[index] }}</td>
+          <td>{{orderData[item]}}</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="../../plugins/vue/vue.js"></script>
+  <!-- 引入组件库 -->
+  <script src="../../plugins/element-ui/index.js"></script>
+  <!-- 引入axios -->
+  <script src="../../plugins/axios/axios.min.js"></script>
+  <script src="../../js/request.js"></script>
+  <script src="../../api/order.js"></script>
+  <script>
+    new Vue({
+      el: '#order-app',
+      data() {
+        return {
+          orderData: {
+            totalMoney: 2074,
+            averagePriceInWeek: 188.54545454545453,
+            orderConvertRate: 84,
+            ordersInWeekNum: 11,
+            ordersPeopleNum: 11,
+            replyOrderRate: 91,
+            shopConvertRate: 82,
+            shopScore: 49.5,
+          },
+          keys: [
+            'totalMoney',
+            'replyOrderRate',
+            'ordersInWeekNum',
+            'averagePriceInWeek',
+            'ordersPeopleNum',
+            'orderConvertRate',
+            'shopConvertRate',
+            'shopScore',
+          ],
+          name: [
+            '7天实际收入(元)',
+            '复购率(%)',
+            '订单数(单)',
+            '用户每单实付（元）',
+            '曝光人数（人）',
+            '下单转化率（%）',
+            '进店转化率（%）',
+            '评分（分）',
+          ],
+          list: [],
+          series: [
+            {
+              type: 'radar',
+              radarIndex: 0,
+              data: [
+                {
+                  value: [100, 93, 50, 90, 70, 60, 80, 4.9],
+                  name: '店铺数据',
+                  label: {
+                    show: true,
+                    formatter: function (params) {
+                      return params.value;
+                    }
+                  },
+                  areaStyle: {
+                    color: new echarts.graphic.RadialGradient(0.1, 0.6, 1, [
+                      {
+                        color: 'rgba(201, 191, 38, 0.5)',
+                        offset: 0
+                      },
+                      {
+                        color: 'rgba(255, 145, 124, 0.9)',
+                        offset: 1
+                      }
+                    ])
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      computed: {},
+
+      created() {
+      },
+      mounted() {
+        // this.loading = false
+        this.init()
+        // this.drawLine();
+      },
+      methods: {
+        async init() {
+          const res = await analysisOrder()
+          console.log(res);
+          for (let item in this.keys) {
+            if (typeof (res.data[this.keys[item]]) === "string") {
+              let num = Number.parseInt(res.data[this.keys[item]].split("%")[0])
+              this.list.push(num)
+
+            } else {
+              this.list.push(res.data[this.keys[item]])
+
+            }
+
+          }
+          this.series[0].data[0].value = this.list
+          console.log(this.series[0].data[0].value);
+          this.drawLine();
+        },
+
+        drawLine() {
+          // 基于刚刚准备好的 DOM 容器，初始化 EChart 实例
+          let myChart = echarts.init(document.getElementById('myChart'))
+          // 绘制图表
+          myChart.setOption({
+            color: ['#c9bf26'],
+            title: {
+              text: 'Customized Radar Chart'
+            },
+            legend: {},
+            radar: [
+              {
+                indicator: [
+                  { text: '7天实际收入(元)', max: 5000 },
+                  { text: '复购率(%)', max: 200 },
+                  { text: '订单数(单)', max: 150 },
+                  { text: '用户每单实付（元）', max: 250 },
+                  { text: '曝光人数（人）', max: 100 },
+                  { text: '下单转化率（%）', max: 100 },
+                  { text: '进店转化率（%）', max: 100 },
+                  { text: '评分（分）', max: 50 }
+                ],
+                // center: ['25%', '50%'],
+                center: ['50%', '50%'],
+                radius: 120,
+                axisName: {
+                  color: '#fff',
+                  backgroundColor: '#666',
+                  borderRadius: 3,
+                  padding: [3, 5]
+                }
+              }
+            ],
+            series: this.series
+          });
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>

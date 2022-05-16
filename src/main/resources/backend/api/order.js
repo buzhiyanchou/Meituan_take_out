@@ -23,3 +23,12 @@ const editOrderDetail = (params) => {
     data: { ...params }
   })
 }
+
+// 取消，派送，完成接口
+const analysisOrder = (params) => {
+  return $axios({
+    url: '/order/analysisOrder',
+    method: 'get',
+    data: { ...params }
+  })
+}
