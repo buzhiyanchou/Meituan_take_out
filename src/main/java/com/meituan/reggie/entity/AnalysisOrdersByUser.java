@@ -21,6 +21,39 @@ public class AnalysisOrdersByUser {
     private Double averagePriceInWeek;
     //用户本周单量数量
     private Integer OrdersInWeekNum;
+
+    public Double getCostAbilityScore() {
+        return costAbilityScore;
+    }
+
+    public void setCostAbilityScore(Double costAbilityScore) {
+        this.costAbilityScore = costAbilityScore;
+    }
+
+    public Double getAveragePriceInWeek() {
+        return averagePriceInWeek;
+    }
+
+    public void setAveragePriceInWeek(Double averagePriceInWeek) {
+        this.averagePriceInWeek = averagePriceInWeek;
+    }
+
+    public Integer getOrdersInWeekNum() {
+        return OrdersInWeekNum;
+    }
+
+    public void setOrdersInWeekNum(Integer ordersInWeekNum) {
+        OrdersInWeekNum = ordersInWeekNum;
+    }
+
+    public List<Orders> getOrdersInWeek() {
+        return OrdersInWeek;
+    }
+
+    public void setOrdersInWeek(List<Orders> ordersInWeek) {
+        OrdersInWeek = ordersInWeek;
+    }
+
     //用户本周订单
     private List<Orders> OrdersInWeek;
 
