@@ -160,6 +160,10 @@ public class OrderController {
 
         //店铺总单数
         int count = list.size();
+        if (count == 0) {
+            count = 1;
+        }
+
         //对店铺订单从高到低消费额降序排列
         List<Orders> orderBymoneySort = list.stream().sorted(Comparator.comparing(Orders::getAmount).reversed()).collect(Collectors.toList());
         QueryWrapper<User> queryWrappern = new QueryWrapper<>();
@@ -192,9 +196,12 @@ public class OrderController {
                 .ordersPeopleNum(userList.size())
                 .shopConvertRate(getRandomNum(30, 50) + "%")
                 .orderConvertRate(getRandomNum(30, 50) + "%")
-                .shopScore(new Double(shopScore) * 9.9)
+                .shopScore(new Double(ObjectUtils.isNull(shopScore) ? 0 : shopScore) * 9.9)
                 .replyOrderRate(getRandomNum(40, 62) + "%")
                 .build();
+        if (list.size() == 0) {
+            analysisOrders.setOrdersInWeekNum(0);
+        }
         return R.success(analysisOrders);
     }
 
