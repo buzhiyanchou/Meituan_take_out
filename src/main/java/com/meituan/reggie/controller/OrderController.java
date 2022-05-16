@@ -192,7 +192,7 @@ public class OrderController {
                 .orderByUserId(users)
                 .totalMoney(totalMoney)
                 .ordersInWeekNum(count)
-                .averagePriceInWeek(new Double(String.valueOf(totalMoney.divide(BigDecimal.valueOf(count), 20, BigDecimal.ROUND_HALF_UP))))
+                .averagePriceInWeek(new Double(String.valueOf(totalMoney.divide(BigDecimal.valueOf(count), 2, BigDecimal.ROUND_HALF_UP))))
                 .ordersPeopleNum(userList.size())
                 .shopConvertRate(getRandomNum(30, 50) + "%")
                 .orderConvertRate(getRandomNum(30, 50) + "%")
