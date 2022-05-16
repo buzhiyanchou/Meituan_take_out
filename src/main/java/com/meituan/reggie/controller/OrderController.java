@@ -190,10 +190,10 @@ public class OrderController {
                 .ordersInWeekNum(count)
                 .averagePriceInWeek(new Double(String.valueOf(totalMoney.divide(BigDecimal.valueOf(count), 20, BigDecimal.ROUND_HALF_UP))))
                 .ordersPeopleNum(userList.size())
-                .shopConvertRate(getRandomNum(50, 89) + "%")
-                .orderConvertRate(getRandomNum(80, 99) + "%")
+                .shopConvertRate(getRandomNum(30, 50) + "%")
+                .orderConvertRate(getRandomNum(30, 50) + "%")
                 .shopScore(new Double(shopScore) * 9.9)
-                .replyOrderRate(getRandomNum(85, 94) + "%")
+                .replyOrderRate(getRandomNum(40, 62) + "%")
                 .build();
         return R.success(analysisOrders);
     }
