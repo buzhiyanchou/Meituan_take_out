@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
   <link rel="stylesheet" href="../../styles/common.css" />
   <link rel="stylesheet" href="../../styles/page.css" />
-<!--  <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>-->
+  <!--  <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>-->
   <script src="../../js/echarts.min.js"> </script>
   <style>
     .data-table td {
@@ -25,18 +25,66 @@
 </head>
 
 <body>
-  <div class="dashboard-container" id="order-app" v-loading="loading" style="display:flex ;flex-wrap: wrap;">
-    <div id="myChart" :style="{width: '700px', height: '500px'}"></div>
-    <div :style="{width: '700px', height: '500px'}">
-      <table class="data-table">
-        <tr v-for="item,index in keys">
-          <td>{{ name[index] }}</td>
-          <td>{{orderData[item]}}</td>
-        </tr>
-      </table>
+  <div id="order-app">
+    <div class="dashboard-container" v-loading="loading" style="display:flex ;flex-wrap: wrap;">
+      <div id="myChart" :style="{width: '700px', height: '500px'}"></div>
+      <div :style="{width: '700px'}">
+        <table class="data-table">
+          <tr v-for="item,index in keys">
+            <td>{{ name[index] }}</td>
+            <td>{{orderData[item]}}</td>
+          </tr>
+        </table>
+      </div>
     </div>
 
+    <div style="padding-top: 10px;padding-bottom: 10px;font-size: 28px;background-color: #ffffff;">
+      用户纬度
+    </div>
+    <div style="width:100%;background-color: #ffffff;padding: 10px; display: flex;">
+      <div style="width:30%;border:1px solid #CCCCCC;">
+        <el-table :data="orderByUserId" stripe class="tableBox">
+          <el-table-column prop="id" label="用户id"></el-table-column>
+          <el-table-column prop="name" label="用户名"></el-table-column>
+          <el-table-column prop="btn" label="操作">
+            <template slot-scope="{ row }">
+              <el-button type="text" @click="goDetail(row)" class="blueBug">
+                查看
+              </el-button>
+              <el-divider v-if="row.status === 2" direction="vertical"></el-divider>
+              <el-button v-if="row.status === 2" type="text" @click="cancelOrDeliveryOrComplete(3, row.id)"
+                class="blueBug">
+                派送
+              </el-button>
+              <el-divider v-if="row.status === 3" direction="vertical"></el-divider>
+              <el-button v-if="row.status === 3" type="text" @click="cancelOrDeliveryOrComplete(4, row.id)"
+                class="blueBug">
+                完成
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div style="width:60%;border:1px solid #CCCCCC; margin-left: 20px;">
+        <div id="myChartUser" style="width: 100%; height: 400px;background-color: #CCCCCC"></div>
+        <el-table :data="userData.ordersInWeek" stripe class="tableBox">
+          <el-table-column prop="consignee" label="名字"></el-table-column>
+          <el-table-column prop="evaStutas" label="好评">
+            <template slot-scope="{ row }">
+              <span>{{ getType(row) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="evaluate" label="评价"></el-table-column>
+          <el-table-column prop="status" label="订单状态">
+            <template slot-scope="{ row }">
+              <span>{{ getOrderType(row) }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </div>
   </div>
+
   <!-- 开发环境版本，包含了有帮助的命令行警告 -->
   <script src="../../plugins/vue/vue.js"></script>
   <!-- 引入组件库 -->
@@ -80,6 +128,9 @@
             '进店转化率（%）',
             '评分（分）',
           ],
+          userData: {},
+          orderByUserId: [],
+          orderBymoneySort: [],
           list: [],
           series: [
             {
@@ -89,6 +140,36 @@
                 {
                   value: [100, 93, 50, 90, 70, 60, 80, 4.9],
                   name: '店铺数据',
+                  label: {
+                    show: true,
+                    formatter: function (params) {
+                      return params.value;
+                    }
+                  },
+                  areaStyle: {
+                    color: new echarts.graphic.RadialGradient(0.1, 0.6, 1, [
+                      {
+                        color: 'rgba(201, 191, 38, 0.5)',
+                        offset: 0
+                      },
+                      {
+                        color: 'rgba(255, 145, 124, 0.9)',
+                        offset: 1
+                      }
+                    ])
+                  }
+                }
+              ]
+            }
+          ],
+          seriesUser: [
+            {
+              type: 'radar',
+              radarIndex: 0,
+              data: [
+                {
+                  value: [100, 50, 0, 0, 0, 0, 0, 0],
+                  name: '用户数据',
                   label: {
                     show: true,
                     formatter: function (params) {
@@ -123,9 +204,63 @@
         // this.drawLine();
       },
       methods: {
+        getOrderType(row){
+          let str = ''
+          switch (row.status) {
+            case 1:
+              str = '待付款'
+              break;
+            case 2:
+              str = '正在派送'
+              break;
+            case 3:
+              str = '已派送'
+              break;
+            case 4:
+              str = '已完成'
+              break;
+            case 5:
+              str = '已取消'
+              break;
+
+          }
+          return str
+        },
+        getType(row) {
+          let str = ''
+          switch (row.evaStutas) {
+            case 1:
+              str = '好评'
+              break;
+            case 2:
+              str = '中评'
+              break;
+            case 3:
+              str = '差评'
+              break;
+           
+
+          }
+          return str
+        },
+
+        // 获取用户数据
+        async goDetail(row) {
+          const res = await analysisOrderByCustomerApi({
+            id: row.id
+          })
+          console.log(res);
+          this.userData = res.data
+          this.seriesUser[0].data[0].value[0] = this.userData.averagePriceInWeek
+          this.seriesUser[0].data[0].value[1] = this.userData.costAbilityScore
+          this.drawLineUser()
+        },
         async init() {
           const res = await analysisOrder()
           console.log(res);
+          this.orderByUserId = res.data.orderByUserId
+          this.goDetail(this.orderByUserId[0].id)
+          // console.log(this.orderBymoneySort);
           for (let item in this.keys) {
             if (typeof (res.data[this.keys[item]]) === "string") {
               let num = Number.parseInt(res.data[this.keys[item]].split("%")[0])
@@ -149,7 +284,7 @@
           myChart.setOption({
             color: ['#c9bf26'],
             title: {
-              text: 'Customized Radar Chart'
+              text: '店铺分析'
             },
             legend: {},
             radar: [
@@ -176,6 +311,42 @@
               }
             ],
             series: this.series
+          });
+        },
+        drawLineUser() {
+          // 基于刚刚准备好的 DOM 容器，初始化 EChart 实例
+          let myChart = echarts.init(document.getElementById('myChartUser'))
+          // 绘制图表
+          myChart.setOption({
+            color: ['#3bedde'],
+            title: {
+              text: '用户分析'
+            },
+            legend: {},
+            radar: [
+              {
+                indicator: [
+                  { text: '本周消费', max: 1000 },
+                  { text: '消费能力', max: 50 },
+                  { text: '', max: 150 },
+                  { text: '', max: 250 },
+                  { text: '', max: 100 },
+                  { text: '', max: 100 },
+                  { text: '', max: 100 },
+                  { text: '', max: 50 }
+                ],
+                // center: ['25%', '50%'],
+                center: ['50%', '50%'],
+                radius: 120,
+                axisName: {
+                  color: '#fff',
+                  backgroundColor: '#666',
+                  borderRadius: 3,
+                  padding: [3, 5]
+                }
+              }
+            ],
+            series: this.seriesUser
           });
         }
       }

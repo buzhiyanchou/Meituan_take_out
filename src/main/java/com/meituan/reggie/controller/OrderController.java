@@ -219,7 +219,7 @@ public class OrderController {
      * @param user
      * @return
      */
-    @GetMapping("/analysisOrderByCustomer")
+    @PostMapping("/analysisOrderByCustomer")
     public R<AnalysisOrdersByUser> analysisOrderByCustomer(@RequestBody User user) {
         Calendar cal = Calendar.getInstance();
         cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);

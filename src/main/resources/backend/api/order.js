@@ -32,3 +32,12 @@ const analysisOrder = (params) => {
     data: { ...params }
   })
 }
+
+// 基于用户分析订单数据
+const analysisOrderByCustomerApi = (params) => {
+  return $axios({
+    url: '/order/analysisOrderByCustomer',
+    method: 'post',
+    data: { ...params }
+  })
+}
