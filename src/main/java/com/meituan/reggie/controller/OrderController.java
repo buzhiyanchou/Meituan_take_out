@@ -261,7 +261,7 @@ public class OrderController {
         QueryWrapper<Orders> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", orderStutas.getOrderId());
         Orders one = orderService.getOne(queryWrapper);
-        one.setStatus(orderStutas.getStatus());
+        one.setStatus(ObjectUtils.isNull(orderStutas.getStatus())?0:orderStutas.getStatus());
         boolean save = orderService.update(one, queryWrapper);
         if (Boolean.TRUE.equals(save)) {
             return R.success(one);
