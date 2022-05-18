@@ -48,7 +48,7 @@
                         </div>
                         <div class="btn" v-if="order.status === 4">
                             <div class="btnAgain" @click="evaluation(order.id)">评价</div>
-                            <div class="btnAgain" @click="addOrderAgain(order)">再来一单</div>
+                            <div class="btnAgain" @click="evaluation(order.id)">查看评价</div>
                         </div>
                     </van-cell>
                 </van-list>

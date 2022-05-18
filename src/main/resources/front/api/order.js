@@ -40,3 +40,11 @@ function evaluateOrder(data) {
     data
   })
 }
+// 查看评价
+function selectEvaluateByOrderId(data) {
+  return $axios({
+    'url': '/order/selectEvaluateByOrderId',
+    'method': 'post',
+    data
+  })
+}

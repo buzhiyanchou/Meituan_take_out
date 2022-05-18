@@ -104,7 +104,7 @@ public class OrderController {
      * @param orders
      * @return
      */
-    @GetMapping("/selectEvaluateByOrderId")
+    @PostMapping("/selectEvaluateByOrderId")
     public R<EvaVO> selectEvaluateByOrderId(@RequestBody Orders orders) {
         Long id = orders.getId();
         //构造器对象

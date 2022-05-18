@@ -51,7 +51,8 @@
                     />
                   
                 </div>
-                <div class="btnAgain submit" @click="submit">提交</div>
+                <div class="btnAgain submit" v-show="btu" @click="submit">提交</div>
+                <div class="btnAgain submit" v-show="!btu" @click="goBack">返回</div>
                 <van-popup click-overlay="closeModel" round v-model="show" style = "padding-top: 10rem;padding-left: 10rem;padding-bottom: 5rem;padding-right: 5rem;">
                   <van-icon name="passed" size="17rem" color="#4f9a48"/>
                   感谢您的评价！
@@ -79,6 +80,7 @@
                     evaluate : '',
                     evaStutas : 1
                   },
+                  btu:true,
                   show: false
                 }
             },
@@ -89,6 +91,13 @@
               // console.log(query.split("=")[1]);
               // console.log("---------- url -----------------");
               this.evaluate.id = query.split("=")[1]
+              selectEvaluateByOrderId({id:this.evaluate.id}).then(res => {
+                if (res.code === 1) {
+                  this.btu = false
+                } 
+              }).catch(err => {
+                this.$message.error('请求出错了：' + err)
+              })
             },
             mounted(){},
             methods:{
@@ -103,15 +112,16 @@
                   history.go(-1)
                 },
                 goBack(){
-                    const url = document.referrer
-                    //表示是从订单页面跳转过来的
-                    if(url.includes('success')){
-                        window.requestAnimationFrame(()=>{
-                            window.location.replace= '/front/page/order.html'
-                        })   
-                    }else{
-                        history.go(-1)
-                    }
+                    // const url = document.referrer
+                    // //表示是从订单页面跳转过来的
+                    // if(url.includes('success')){
+                    //     window.requestAnimationFrame(()=>{
+                    //         window.location.replace= '/front/page/order.html'
+                    //     })   
+                    // }else{
+                    //     history.go(-1)
+                    // }
+                    history.go(-1)
                 },
                 initData(){
                     this.getList()
