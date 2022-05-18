@@ -18,8 +18,8 @@ const queryOrderDetailById = (id) => {
 // 取消，派送，完成接口
 const editOrderDetail = (params) => {
   return $axios({
-    url: '/order',
-    method: 'put',
+    url: '/order/changeStatus',
+    method: 'post',
     data: { ...params }
   })
 }

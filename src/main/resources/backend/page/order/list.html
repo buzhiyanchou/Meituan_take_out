@@ -265,7 +265,10 @@
                 'cancelButtonText': '取消',
                 'type': 'warning'
               }).then(() => {
-                editOrderDetail(params).then(res => {
+                editOrderDetail({
+                  status: status,
+                  orderId: id
+                }).then(res => {
                   if (res.code === 1) {
                     this.$message.success(status === 3 ? '订单已派送' : '订单已完成')
                     this.init()
@@ -276,10 +279,7 @@
                   this.$message.error('请求出错了：' + err)
                 })
             })
-            const params = {
-              status,
-              id
-            }
+            
           },
           handleClose () {
             this.dialogVisible = false
