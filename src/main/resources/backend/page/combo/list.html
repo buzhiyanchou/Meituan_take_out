@@ -43,10 +43,10 @@
         class="tableBox"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column
+        <!-- <el-table-column
           type="selection"
           width="25"
-        ></el-table-column>
+        ></el-table-column> -->
         <el-table-column
           prop="name"
           label="优惠券名称"
@@ -69,7 +69,7 @@
           label="优惠券额数"
         >
           <template slot-scope="scope">
-            <span>￥{{ scope.row.price/100 }}</span>
+            <span>￥{{ scope.row.price }}</span>
           </template>
         </el-table-column>
         <el-table-column label="启用状态">

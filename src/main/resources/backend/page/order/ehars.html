@@ -32,7 +32,7 @@
         <table class="data-table">
           <tr v-for="item,index in keys">
             <td>{{ name[index] }}</td>
-            <td>{{orderData[item]}}</td>
+            <td>{{String(list[index])}}</td>
           </tr>
         </table>
       </div>
@@ -265,13 +265,11 @@
             if (typeof (res.data[this.keys[item]]) === "string") {
               let num = Number.parseInt(res.data[this.keys[item]].split("%")[0])
               this.list.push(num)
-
             } else {
               this.list.push(res.data[this.keys[item]])
-
             }
-
           }
+          this.list[3] = this.list[3].toFixed(2)
           this.series[0].data[0].value = this.list
           console.log(this.series[0].data[0].value);
           this.drawLine();
