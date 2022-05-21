@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 套餐菜品关系
+ * 优惠券菜品关系
  */
 @Data
 public class SetmealDish implements Serializable {
@@ -18,7 +18,7 @@ public class SetmealDish implements Serializable {
     private Long id;
 
 
-    //套餐id
+    //优惠券id
     private Long setmealId;
 
 

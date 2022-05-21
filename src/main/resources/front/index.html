@@ -351,7 +351,7 @@
                 this.$notify({ type:'warning', message:res.msg});
               }
             },
-            //获取套餐数据setmealId
+            //获取优惠券数据setmealId
             async getSetmealData(){
               if(!this.categoryId){
                 return
@@ -389,13 +389,13 @@
                 amount:item.price/100,//金额
                 dishFlavor:item.dishFlavor,//口味  如果没有传undefined
                 dishId:undefined,//菜品id
-                setmealId:undefined,//套餐id
+                setmealId:undefined,//优惠券id
                 name:item.name,
                 image:item.image
               }
               if(Array.isArray(item.flavors)){//表示是菜品
                 params.dishId = item.id
-              }else{//表示套餐 套餐没有口味
+              }else{//表示优惠券 优惠券没有口味
                 params.setmealId = item.id
               }
               const res = await addCartApi(params)
@@ -452,7 +452,7 @@
                 amount:item.amount,//金额
                 dishFlavor:item.dishFlavor,//口味  如果没有传undefined
                 dishId:item.dishId,//菜品id
-                setmealId:item.setmealId,//套餐id
+                setmealId:item.setmealId,//优惠券id
                 name:item.name,
                 image:item.image
               }
@@ -585,7 +585,7 @@
                 this.detailsDialog.item = item
                 this.detailsDialog.show = true
               }else{
-                //显示套餐的数据
+                //显示优惠券的数据
                 const res = await setMealDishDetailsApi(item.id)
                 if(res.code === 1){
                   this.setMealDialog.item = {...item,list:res.data}

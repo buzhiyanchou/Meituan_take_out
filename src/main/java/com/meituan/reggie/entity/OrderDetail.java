@@ -118,7 +118,7 @@ public class OrderDetail implements Serializable {
         this.eva_stutas = eva_stutas;
     }
 
-    //套餐id
+    //优惠券id
     private Long setmealId;
 
 

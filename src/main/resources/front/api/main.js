@@ -15,7 +15,7 @@ function dishListApi(data) {
     })
 }
 
-//获取菜品分类对应的套餐
+//获取菜品分类对应的优惠券
 function setmealListApi(data) {
     return $axios({
         'url': '/setmeal/list',
@@ -60,7 +60,7 @@ function clearCartApi() {
     })
 }
 
-//获取套餐的全部菜品
+//获取优惠券的全部菜品
 function setMealDishDetailsApi(id) {
     return $axios({
         'url': `/setmeal/dish/${id}`,

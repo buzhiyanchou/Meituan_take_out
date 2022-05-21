@@ -25,12 +25,12 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper,Setmeal> imple
     private SetmealDishService setmealDishService;
 
     /**
-     * 新增套餐，同时需要保存套餐和菜品的关联关系
+     * 新增优惠券，同时需要保存优惠券和菜品的关联关系
      * @param setmealDto
      */
     @Transactional
     public void saveWithDish(SetmealDto setmealDto) {
-        //保存套餐的基本信息，操作setmeal，执行insert操作
+        //保存优惠券的基本信息，操作setmeal，执行insert操作
         this.save(setmealDto);
 
         List<SetmealDish> setmealDishes = setmealDto.getSetmealDishes();
@@ -39,18 +39,18 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper,Setmeal> imple
             return item;
         }).collect(Collectors.toList());
 
-        //保存套餐和菜品的关联信息，操作setmeal_dish,执行insert操作
+        //保存优惠券和菜品的关联信息，操作setmeal_dish,执行insert操作
         setmealDishService.saveBatch(setmealDishes);
     }
 
     /**
-     * 删除套餐，同时需要删除套餐和菜品的关联数据
+     * 删除优惠券，同时需要删除优惠券和菜品的关联数据
      * @param ids
      */
     @Transactional
     public void removeWithDish(List<Long> ids) {
         //select count(*) from setmeal where id in (1,2,3) and status = 1
-        //查询套餐状态，确定是否可用删除
+        //查询优惠券状态，确定是否可用删除
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper();
         queryWrapper.in(Setmeal::getId,ids);
         queryWrapper.eq(Setmeal::getStatus,1);
@@ -58,10 +58,10 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper,Setmeal> imple
         int count = this.count(queryWrapper);
         if(count > 0){
             //如果不能删除，抛出一个业务异常
-            throw new CustomException("套餐正在售卖中，不能删除");
+            throw new CustomException("优惠券正在售卖中，不能删除");
         }
 
-        //如果可以删除，先删除套餐表中的数据---setmeal
+        //如果可以删除，先删除优惠券表中的数据---setmeal
         this.removeByIds(ids);
 
         //delete from setmeal_dish where setmeal_id in (1,2,3)

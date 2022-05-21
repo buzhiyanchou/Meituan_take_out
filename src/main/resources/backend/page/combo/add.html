@@ -174,22 +174,22 @@
           class="demo-ruleForm"
         >
           <div>
-            <el-form-item label="套餐名称:" prop="name" >
-              <el-input v-model="ruleForm.name" placeholder="请填写套餐名称" maxlength="20"/>
+            <el-form-item label="优惠券名称:" prop="name" >
+              <el-input v-model="ruleForm.name" placeholder="请填写优惠券名称" maxlength="20"/>
             </el-form-item>
-            <el-form-item label="套餐分类:" prop="idType">
-              <el-select v-model="ruleForm.idType" placeholder="请选择套餐分类" @change="$forceUpdate()">
+            <el-form-item label="优惠券分类:" prop="idType">
+              <el-select v-model="ruleForm.idType" placeholder="请选择优惠券分类" @change="$forceUpdate()">
                 <el-option v-for="(item, index) in setMealList" :key="index" :label="item.name" :value="item.id" />
               </el-select>
             </el-form-item>
           </div>
           <div>
-            <el-form-item label="套餐价格:" prop="price">
-              <el-input v-model="ruleForm.price" placeholder="请设置套餐价格" />
+            <el-form-item label="优惠券价格:" prop="price">
+              <el-input v-model="ruleForm.price" placeholder="请设置优惠券价格" />
             </el-form-item>
           </div>
           <div>
-            <el-form-item label="套餐菜品:" class="setmealFood">
+            <el-form-item label="优惠券菜品:" class="setmealFood">
               <el-form-item>
                 <div class="addDish">
                   <span v-if="dishTable.length == 0" class="addBut" @click="openAddDish"> + 添加菜品</span>
@@ -225,7 +225,7 @@
             </el-form-item>
           </div>
           <div>
-            <el-form-item label="套餐图片:" class="uploadImg">
+            <el-form-item label="优惠券图片:" class="uploadImg">
               <el-upload
                 class="avatar-uploader"
                 action="/common/upload"
@@ -240,8 +240,8 @@
             </el-form-item>
           </div>
           <div class="address">
-            <el-form-item label="套餐描述:">
-              <el-input v-model="ruleForm.description" type="textarea" :rows="3" placeholder="套餐描述，最长200字" maxlength="200"/>
+            <el-form-item label="优惠券描述:">
+              <el-input v-model="ruleForm.description" type="textarea" :rows="3" placeholder="优惠券描述，最长200字" maxlength="200"/>
             </el-form-item>
           </div>
           <div class="subBox address">
@@ -254,7 +254,7 @@
                 class="continue"
                 @click="submitForm('ruleForm', true)"
               >
-                保存并继续添加套餐
+                保存并继续添加优惠券
               </el-button>
             </el-form-item>
           </div>
@@ -405,17 +405,17 @@
             return {
               name: {
                 required: true,
-                message: '请输入套餐名称',
+                message: '请输入优惠券名称',
                 trigger: 'blur',
               },
               idType: {
                 required: true,
-                message: '请选择套餐分类',
+                message: '请选择优惠券分类',
                 trigger: 'change',
               },
               price: {
                 required: true,
-                // 'message': '请输入套餐价格',
+                // 'message': '请输入优惠券价格',
                 validator: (rules, value, callback) => {
                     if (!value) {
                       callback(new Error('请填写菜品价格'))
@@ -477,7 +477,7 @@
           seachHandle() {
             this.seachKey = this.value
           },
-          // 获取套餐分类
+          // 获取优惠券分类
           getDishTypeList() {
             getCategoryList({ type: 2 }).then((res) => {
               if (res.code === 1) {
@@ -487,7 +487,7 @@
               }
             })
           },
-          // 删除套餐菜品
+          // 删除优惠券菜品
           delDishHandle(index) {
             this.dishTable.splice(index, 1)
             this.checkList.splice(index, 1)
@@ -543,7 +543,7 @@
                   return 
                 }
                 if(!this.imageUrl){
-                  this.$message.error('请上传套餐图片')
+                  this.$message.error('请上传优惠券图片')
                   return 
                 }
                 // delete prams.dishList
@@ -552,7 +552,7 @@
                   addSetmeal(prams)
                     .then((res) => {
                       if (res.code === 1) {
-                        this.$message.success('套餐添加成功！')
+                        this.$message.success('优惠券添加成功！')
                         if (!st) {
                           this.goBack()
                         } else {
@@ -585,7 +585,7 @@
                   editSetmeal(prams)
                     .then((res) => {
                       if (res.code === 1) {
-                        this.$message.success('套餐修改成功！')
+                        this.$message.success('优惠券修改成功！')
                         this.goBack()
                       } else {
                         this.$message.error(res.msg || '操作失败')
@@ -631,12 +631,12 @@
               {
                 id: '5',
                 url: '/backend/page/combo/list.html',
-                name: '套餐管理',
+                name: '优惠券管理',
               },
               false
             )
           },
-          // 获取套餐分类
+          // 获取优惠券分类
           getDishType () {
             getCategoryList({'type':1}).then(res => {
               if (res.code === 1) {
@@ -648,7 +648,7 @@
             })
           },
 
-          // 通过套餐ID获取菜品列表分类
+          // 通过优惠券ID获取菜品列表分类
           getDishList (id) {
             queryDishList({categoryId: id}).then(res => {
               if (res.code === 1) {

@@ -313,7 +313,7 @@ public class UserController {
 //                //如果是菜品那就添加菜品的查询条件
 //                shoppingCart.setDishId(dishId);
 //            } else {
-//                //添加到购物车的是套餐
+//                //添加到购物车的是优惠券
 //                shoppingCart.setSetmealId(setmealId);
 //            }
 //            shoppingCart.setName(item.getName());

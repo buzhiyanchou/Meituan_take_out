@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 套餐
+ * 优惠券
  */
 @Data
 public class Setmeal implements Serializable {
@@ -123,11 +123,11 @@ public class Setmeal implements Serializable {
         this.updateUser = updateUser;
     }
 
-    //套餐名称
+    //优惠券名称
     private String name;
 
 
-    //套餐价格
+    //优惠券价格
     private BigDecimal price;
 
 

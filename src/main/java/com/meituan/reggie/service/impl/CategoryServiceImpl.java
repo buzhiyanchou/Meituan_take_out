@@ -39,14 +39,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper,Category> im
             throw new CustomException("当前分类下关联了菜品，不能删除");
         }
 
-        //查询当前分类是否关联了套餐，如果已经关联，抛出一个业务异常
+        //查询当前分类是否关联了优惠券，如果已经关联，抛出一个业务异常
         LambdaQueryWrapper<Setmeal> setmealLambdaQueryWrapper = new LambdaQueryWrapper<>();
         //添加查询条件，根据分类id进行查询
         setmealLambdaQueryWrapper.eq(Setmeal::getCategoryId,id);
         int count2 = setmealService.count();
         if(count2 > 0){
-            //已经关联套餐，抛出一个业务异常
-            throw new CustomException("当前分类下关联了套餐，不能删除");
+            //已经关联优惠券，抛出一个业务异常
+            throw new CustomException("当前分类下关联了优惠券，不能删除");
         }
 
         //正常删除分类

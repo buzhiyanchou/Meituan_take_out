@@ -46,11 +46,11 @@ public class ShoppingCartController {
             queryWrapper.eq(ShoppingCart::getDishId,dishId);
 
         }else{
-            //添加到购物车的是套餐
+            //添加到购物车的是优惠券
             queryWrapper.eq(ShoppingCart::getSetmealId,shoppingCart.getSetmealId());
         }
 
-        //查询当前菜品或者套餐是否在购物车中
+        //查询当前菜品或者优惠券是否在购物车中
         //SQL:select * from shopping_cart where user_id = ? and dish_id/setmeal_id = ?
         ShoppingCart cartServiceOne = shoppingCartService.getOne(queryWrapper);
 
