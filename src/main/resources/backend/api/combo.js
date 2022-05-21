@@ -45,8 +45,11 @@ const querySetmealById = (id) => {
 // 批量起售禁售
 const setmealStatusByStatus = (params) => {
   return $axios({
-    url: `/setmeal/status/${params.status}`,
+    url: `/setmeal/status`,
     method: 'post',
-    data: { id: params.ids }
+    data: { 
+      id: params.ids,
+      status: params.status
+    }
   })
 }
