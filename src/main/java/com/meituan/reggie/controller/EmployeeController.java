@@ -114,9 +114,10 @@ public class EmployeeController {
      * @param employee
      * @return
      */
-    @PostMapping
+    @PostMapping("/add")
     public R<String> save(HttpServletRequest request, @RequestBody Employee employee) {
         log.info("新增员工，员工信息：{}", employee.toString());
+        employee.setType(1);
 
         //设置初始密码123456，需要进行md5加密处理
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
@@ -199,7 +200,7 @@ public class EmployeeController {
      * @param employee
      * @return
      */
-    @PutMapping
+    @PutMapping("/edit")
     public R<String> update(HttpServletRequest request, @RequestBody Employee employee) {
         log.info(employee.toString());
 

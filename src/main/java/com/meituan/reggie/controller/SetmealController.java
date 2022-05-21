@@ -116,8 +116,8 @@ public class SetmealController {
      * 停用优惠券
      * @return
      */
-    @PostMapping("/status")
-    public R<String> delete(@RequestParam Integer status,@RequestParam String id){
+    @PostMapping("/status/{status}")
+    public R<String> delete(@PathVariable Integer status,@RequestBody String id){
         QueryWrapper<Setmeal> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",id);
         queryWrapper.eq("status",status);
