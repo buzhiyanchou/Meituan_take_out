@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.conditions.update.UpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.meituan.reggie.common.R;
 import com.meituan.reggie.dto.SetmealDto;
+import com.meituan.reggie.dto.Status;
 import com.meituan.reggie.entity.Category;
 import com.meituan.reggie.entity.Orders;
 import com.meituan.reggie.entity.Setmeal;
@@ -116,16 +117,12 @@ public class SetmealController {
      * 停用优惠券
      * @return
      */
-    @PostMapping("/status/{status}")
-    public R<String> delete(@PathVariable Integer status,@RequestBody String id){
-        QueryWrapper<Setmeal> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",id);
-        queryWrapper.eq("status",status);
-        boolean update = setmealService.update(queryWrapper);
+    @PostMapping("/status")
+    public R<String> delete(@RequestBody Setmeal setmeal){
+        boolean update = setmealService.updateById(setmeal);
         if (Boolean.TRUE.equals(update)){
             return R.success("优惠券数据取消成功");
         }
-
         return R.error("优惠券取消失败");
     }
 
